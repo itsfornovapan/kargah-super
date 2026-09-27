@@ -392,7 +392,14 @@
       var out;
 
       if (cloudHasAny(cloud)) {
-        var merged = mergeInto(cloud, true);   // we are about to push: our rows win
+        // Always reconcile with server first (localWins=false) so that rows
+        // deleted by OTHER devices are dropped from our snapshot BEFORE we
+        // re-apply our local edits on top. Without this pre-pass, a device
+        // whose sync snapshot is empty or stale would resurrect every remote
+        // deletion.
+        var reconciled = mergeInto(cloud, false);
+        if (reconciled.changed) apply(reconciled);
+        var merged = mergeInto(cloud, true);
         out = merged.tables;
         apply(merged);
       } else {

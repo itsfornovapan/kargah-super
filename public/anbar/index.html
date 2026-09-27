@@ -907,7 +907,14 @@ function syncToCloud(){
       return;
     }
     cloudPulled = true;
-    if (cloudHasAny(res.byTable)) adoptCloud(res.byTable, true);
+    if (cloudHasAny(res.byTable)) {
+      // Two-pass merge:
+      // Pass 1 (localWins=false): update our synced-ID snapshot to the server's
+      // current state, dropping any rows the server no longer returns.
+      // Pass 2 (localWins=true): re-apply our local edits on top of that clean slate.
+      adoptCloud(res.byTable, false);
+      adoptCloud(res.byTable, true);
+    }
     else storeSyncedIds(idsBy(res.byTable));
 
     const snapshot = {
