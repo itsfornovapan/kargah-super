@@ -1,0 +1,15 @@
+node_modules/
+.env
+*.log
+.DS_Store
+.wrangler/
+wrangler.toml
+index.js
+schema.sql
+deploy.sh
+CLOUDFLARE_SETUP.md
+DEPLOYMENT_COMPLETE.md
+SUMMARY.md
+vite.config.js
+package.json
+package-lock.json

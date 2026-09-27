@@ -1,0 +1,2973 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<meta name="description" content="انبار کارگاه دکور سهند — مدیریت ابزار، ورق، یراق‌آلات، فاکتور و امانت ابزار">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="انبار کارگاه">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>انبارگردانی کارگاه</title>
+<style>
+:root,[data-theme="dark"]{
+  --bg:#0b1220; --bg2:#0f172a; --card:#1a2332; --card2:#212e44;
+  --line:#5c4033; --txt:#e8eef8; --mut:#8ea1be;
+  --pri:#d97706; --pri2:#b45309;
+  --ok:#22c55e; --ok-bg:#052e16; --ok-fg:#4ade80;
+  --warn:#b45309; --warn-bg:#451a03; --warn-fg:#fbbf24;
+  --dan:#ef4444; --dan-bg:#450a0a; --dan-fg:#f87171;
+  --amber:#b45309; --orange:#9a3412;
+  --hover:#243147; --shadow:0 10px 34px rgba(0,0,0,.45);
+  --shadow-sm:0 3px 10px rgba(0,0,0,.3);
+  --glow:0 0 0 3px rgba(217,119,6,.25); --rad:14px;
+}
+[data-theme="light"]{
+  --bg:#f1f5f9; --bg2:#f8fafc; --card:#ffffff; --card2:#f8fafc;
+  --line:#d97706; --txt:#0f172a; --mut:#64748b;
+  --pri:#c2410c; --pri2:#9a3412;
+  --ok:#16a34a; --ok-bg:#dcfce7; --ok-fg:#166534;
+  --warn:#b45309; --warn-bg:#fef3c7; --warn-fg:#92400e;
+  --dan:#dc2626; --dan-bg:#fee2e2; --dan-fg:#991b1b;
+  --amber:#d97706; --orange:#b45309;
+  --hover:#f1f5f9; --shadow:0 10px 34px rgba(15,23,42,.08);
+  --shadow-sm:0 3px 10px rgba(15,23,42,.06);
+  --glow:0 0 0 3px rgba(194,65,12,.18); --rad:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;overflow-x:hidden;width:100%}
+html{scroll-behavior:smooth}
+body{
+  font-family:Tahoma,"Segoe UI",system-ui,sans-serif;
+  background:var(--bg);color:var(--txt);font-size:14px;line-height:1.75;
+  -webkit-text-size-adjust:100%;transition:background-color .35s ease,color .35s ease;
+  background-image:radial-gradient(circle at 20% 0%,rgba(217,119,6,.07),transparent 45%),
+                   radial-gradient(circle at 90% 100%,rgba(139,92,246,.05),transparent 45%);
+  background-attachment:fixed;
+}
+svg{display:block}
+.ico-inline{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+@keyframes popIn{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+@keyframes pulseRing{0%{box-shadow:0 0 0 0 rgba(217,119,6,.55)}70%{box-shadow:0 0 0 14px rgba(217,119,6,0)}100%{box-shadow:0 0 0 0 rgba(217,119,6,0)}}
+@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes bounceIn{0%{transform:scale(.9);opacity:0}50%{transform:scale(1.03)}100%{transform:scale(1);opacity:1}}
+
+.view-enter{animation:slideUp .4s cubic-bezier(.2,.9,.3,1) both}
+.card{animation:slideUp .45s cubic-bezier(.2,.9,.3,1) both;animation-delay:calc(var(--d,0)*45ms)}
+.kpi{animation:popIn .55s cubic-bezier(.2,.9,.3,1.15) both;animation-delay:calc(var(--d,0)*70ms)}
+
+header{
+  background:color-mix(in srgb,var(--card) 88%,transparent);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);position:sticky;top:0;z-index:60;
+}
+.header-inner{max-width:1200px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:8px}
+.hamburger,.theme-btn{
+  background:transparent;border:0;cursor:pointer;padding:8px;color:var(--txt);
+  line-height:1;border-radius:10px;flex:0 0 auto;transition:background .2s,transform .2s;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+.hamburger:hover,.theme-btn:hover{background:var(--hover)}
+.hamburger:active,.theme-btn:active{transform:scale(.9)}
+.brand{font-weight:700;font-size:15px;flex:1;display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;min-width:0}
+.brand-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brand-ico{color:var(--pri);flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center}
+
+.drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;visibility:hidden;transition:opacity .28s,visibility .28s;z-index:80;backdrop-filter:blur(2px)}
+.drawer-backdrop.show{opacity:1;visibility:visible}
+.drawer{
+  position:fixed;top:0;bottom:0;inset-inline-start:0;width:min(280px,82vw);background:var(--card);
+  transform:translateX(100%);transition:transform .32s cubic-bezier(.2,.9,.3,1);
+  z-index:90;display:flex;flex-direction:column;box-shadow:-8px 0 30px rgba(0,0,0,.4);
+  border-inline-end:1px solid var(--line);
+}
+.drawer.show{transform:translateX(0)}
+.drawer-head{padding:14px 16px;border-bottom:1px solid var(--line);font-weight:700;font-size:15px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.drawer-head .x{border:0;background:none;cursor:pointer;color:var(--mut);padding:6px;line-height:0;border-radius:8px;transition:.2s;display:inline-flex;align-items:center;justify-content:center}
+.drawer-head .x:hover{background:var(--hover);color:var(--txt)}
+.drawer nav{padding:8px;display:flex;flex-direction:column;gap:2px;overflow:auto;flex:1}
+.drawer nav button{
+  display:flex;align-items:center;gap:12px;border:0;background:none;
+  padding:12px 14px;border-radius:10px;cursor:pointer;font-family:inherit;
+  font-size:14.5px;color:var(--txt);text-align:start;width:100%;
+  transition:background .2s,transform .15s,color .2s;
+  opacity:0;transform:translateX(20px);
+}
+.drawer.show nav button{animation:slideDown .35s cubic-bezier(.2,.9,.3,1) both;animation-delay:calc(var(--i,0)*40ms + 60ms)}
+.drawer nav button:hover{background:var(--hover)}
+.drawer nav button:active{transform:scale(.97)}
+.drawer nav button.active{background:var(--pri);color:#fff;box-shadow:0 4px 16px rgba(217,119,6,.35)}
+.drawer nav .ico{flex:0 0 auto;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;color:currentColor}
+.drawer nav .ico svg{width:19px;height:19px}
+.drawer nav button .badge-n{background:var(--dan);color:#fff;font-size:11px;padding:1px 7px;border-radius:20px;margin-inline-start:auto;font-weight:700}
+
+main{max-width:1200px;margin:0 auto;padding:16px 12px 100px;width:100%}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--rad);padding:16px;margin-bottom:14px;max-width:100%;transition:background-color .35s,border-color .35s,transform .2s,box-shadow .25s}
+.card:hover{box-shadow:var(--shadow-sm)}
+
+/* =========================================================
+   Section header (inside cards) - clean & settled
+========================================================= */
+.sec-head{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding-bottom:12px;margin-bottom:14px;
+  border-bottom:1px solid var(--line);
+}
+.sec-head .sec-title-main{
+  display:flex;align-items:center;gap:9px;
+  font-size:15px;font-weight:700;color:var(--txt);
+  margin:0;flex:1;min-width:0;
+}
+.sec-head .sec-title-main svg{color:var(--pri);flex:0 0 auto}
+.sec-head .sec-title-main .sec-count{
+  color:var(--mut);font-weight:600;font-size:13px;
+}
+.sec-head .sec-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+
+/* Breadcrumb row */
+.crumb{
+  display:flex;gap:6px;flex-wrap:wrap;align-items:center;
+  margin-bottom:12px;font-size:13px;
+}
+.crumb-item{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 12px;border-radius:20px;
+  background:var(--card2);border:1px solid var(--line);
+  color:var(--mut);cursor:pointer;font-family:inherit;
+  transition:.2s;font-size:12.5px;font-weight:600;
+  line-height:1.4;
+}
+.crumb-item:hover{background:var(--hover);color:var(--txt);border-color:var(--pri)}
+.crumb-item.current{
+  background:color-mix(in srgb,var(--pri) 22%,var(--card));
+  color:var(--pri);border-color:color-mix(in srgb,var(--pri) 40%,var(--line));
+  cursor:default;
+}
+.crumb-sep{color:var(--mut);opacity:.5;font-size:14px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+label{display:block;font-size:12.5px;color:var(--mut);margin-bottom:4px;font-weight:500}
+input,select,textarea{
+  width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;
+  font-family:inherit;font-size:14px;background:var(--card2);color:var(--txt);max-width:100%;
+  transition:border-color .2s,box-shadow .2s,background-color .35s;
+}
+input::placeholder,textarea::placeholder{color:var(--mut);opacity:.7}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--pri);box-shadow:var(--glow)}
+
+.btn{
+  position:relative;overflow:hidden;border:1px solid var(--line);background:var(--card);
+  padding:8px 14px;border-radius:9px;cursor:pointer;font-family:inherit;font-size:13.5px;
+  color:var(--txt);transition:background .2s,transform .12s,border-color .2s,box-shadow .2s;
+  white-space:nowrap;display:inline-flex;align-items:center;gap:6px;justify-content:center;
+}
+.btn svg{flex:0 0 auto}
+.btn:hover{background:var(--hover);border-color:color-mix(in srgb,var(--pri) 40%,var(--line))}
+.btn:active{transform:scale(.96)}
+.btn.pri{background:var(--pri);color:#fff;border-color:var(--pri)}
+.btn.pri:hover{background:var(--pri2);box-shadow:0 6px 18px rgba(217,119,6,.35)}
+.btn.ok{background:var(--ok-bg);color:var(--ok-fg);border-color:color-mix(in srgb,var(--ok) 40%,var(--line))}
+.btn.dan{background:var(--dan-bg);color:var(--dan-fg);border-color:color-mix(in srgb,var(--dan) 40%,var(--line))}
+.btn.warn{background:var(--warn-bg);color:var(--warn-fg);border-color:color-mix(in srgb,var(--warn) 40%,var(--line))}
+.btn.amber{background:linear-gradient(135deg,var(--amber),var(--orange));color:#fff;border-color:transparent;font-weight:600}
+.btn.amber:hover{box-shadow:0 6px 18px rgba(217,119,6,.4)}
+.btn.sm{padding:5px 10px;font-size:12.5px;border-radius:7px}
+.btn.sm svg{width:14px;height:14px}
+.btn.lg{padding:12px 22px;font-size:15px;border-radius:12px}
+.btn.icon{padding:8px;width:38px;height:38px;border-radius:10px}
+.btn.icon svg{width:18px;height:18px}
+
+/* Item list (simple rows) */
+.item-list{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card2)}
+.item-row{
+  display:flex;align-items:center;gap:12px;padding:12px 14px;
+  border-bottom:1px solid var(--line);transition:background .18s;
+}
+.item-row:last-child{border-bottom:0}
+.item-row:hover{background:var(--hover)}
+.item-row-name{flex:1;min-width:0;font-weight:600;word-break:break-word;overflow-wrap:anywhere;font-size:14px}
+.item-row-name small{display:block;font-weight:400;color:var(--mut);font-size:11.5px;margin-top:3px}
+.item-row-qty{flex:0 0 auto;font-weight:700;color:var(--pri);font-size:13.5px;white-space:nowrap}
+.item-row-actions{flex:0 0 auto;display:flex;gap:5px}
+
+/* Table */
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;-webkit-overflow-scrolling:touch;max-width:100%;background:var(--card)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line);vertical-align:middle}
+th{background:var(--card2);font-weight:600;color:var(--mut);font-size:12.5px;white-space:nowrap}
+tbody tr{transition:background .2s}
+tbody tr:hover{background:var(--hover)}
+tbody tr:last-child td{border-bottom:0}
+td.wrap{white-space:normal;word-break:break-word}
+
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.badge.ok{background:var(--ok-bg);color:var(--ok-fg);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent)}
+.badge.warn{background:var(--warn-bg);color:var(--warn-fg);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent)}
+.badge.dan{background:var(--dan-bg);color:var(--dan-fg);border:1px solid color-mix(in srgb,var(--dan) 30%,transparent)}
+.badge.mut{background:var(--card2);color:var(--mut);border:1px solid var(--line)}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:14px}
+.kpi{background:var(--card);border:2px solid var(--pri);border-radius:var(--rad);padding:12px 14px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .25s,border-color .25s,background-color .35s;cursor:pointer}
+.kpi::before{content:'';position:absolute;top:0;inset-inline-start:0;width:100%;height:3px;background:linear-gradient(90deg,var(--pri),#b45309,var(--pri));background-size:200% 100%;opacity:.85;animation:gradientShift 4s ease infinite}
+.kpi:hover{transform:translateY(-3px);box-shadow:0 0 0 3px color-mix(in srgb,var(--pri) 30%,transparent),var(--shadow-sm);border-color:var(--pri)}
+.kpi span{color:var(--mut);font-size:12px;display:block}
+.kpi b{font-size:22px;display:block;margin-top:2px;word-break:break-word;background:linear-gradient(135deg,var(--txt),var(--mut));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.kpi small{color:var(--mut);font-size:11.5px}
+.kpi-head{display:flex;align-items:center;gap:7px;color:var(--mut);font-size:12px}
+.kpi-head svg{color:var(--pri);flex:0 0 auto}
+
+.empty{text-align:center;color:var(--mut);padding:34px 10px;font-size:13.5px;animation:fadeIn .4s ease}
+.empty svg{margin:0 auto 10px;opacity:.55;color:var(--mut)}
+.hint{font-size:12.5px;color:var(--mut);margin-top:6px;word-break:break-word}
+.sec-title{font-weight:700;font-size:13.5px;margin:14px 0 8px;color:var(--mut)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:200;padding:10px;opacity:0;visibility:hidden;transition:opacity .28s,visibility .28s;backdrop-filter:blur(3px)}
+.modal.show{opacity:1;visibility:visible}
+.modal-box{
+  background:var(--card);border-radius:16px;width:100%;max-width:600px;max-height:92vh;
+  display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5);
+  border:1px solid var(--line);transform:translateY(24px) scale(.96);opacity:0;
+  transition:transform .34s cubic-bezier(.2,.9,.3,1.15),opacity .25s;
+}
+.modal.show .modal-box{transform:none;opacity:1}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);gap:10px}
+.modal-title{font-weight:700;font-size:14.5px;word-break:break-word;display:flex;align-items:center;gap:8px}
+.modal-title svg{color:var(--pri);flex:0 0 auto}
+.modal-head .x{border:0;background:none;cursor:pointer;color:var(--mut);padding:6px;line-height:0;flex:0 0 auto;border-radius:8px;transition:.2s;display:inline-flex;align-items:center;justify-content:center}
+.modal-head .x:hover{background:var(--hover);color:var(--txt)}
+.modal-body{padding:16px;overflow:auto;flex:1;-webkit-overflow-scrolling:touch}
+.modal-foot{padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-start}
+
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.cat-card-wrap{position:relative;animation:scaleIn .35s cubic-bezier(.2,.9,.3,1.1) both;animation-delay:calc(var(--i,0)*45ms)}
+.cat-card{
+  border:1px solid var(--line);background:var(--card2);border-radius:12px;
+  padding:15px 13px;cursor:pointer;text-align:start;font-family:inherit;font-size:14px;
+  transition:transform .18s,border-color .2s,background .2s,box-shadow .25s;
+  display:flex;flex-direction:column;gap:6px;min-height:88px;color:var(--txt);word-break:break-word;
+  position:relative;overflow:hidden;width:100%;
+}
+.cat-card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(217,119,6,.18),transparent 70%);opacity:0;transition:opacity .3s;pointer-events:none}
+.cat-card:hover{border-color:var(--pri);background:var(--card);transform:translateY(-3px);box-shadow:0 8px 22px rgba(217,119,6,.2)}
+.cat-card:hover::after{opacity:1}
+.cat-card:active{transform:translateY(-1px) scale(.98)}
+.cat-card.new{border-style:dashed;color:var(--pri);justify-content:center;align-items:center;background:color-mix(in srgb,var(--pri) 8%,var(--card))}
+.cat-card.new:hover{background:color-mix(in srgb,var(--pri) 15%,var(--card))}
+.cat-name{font-weight:700;word-break:break-word;overflow-wrap:anywhere;display:flex;align-items:center;gap:6px}
+.cat-name svg{flex:0 0 auto}
+.cat-count{font-size:12px;color:var(--mut)}
+
+.cat-tools{position:absolute;top:6px;left:6px;display:flex;gap:3px;opacity:0;transition:.2s;z-index:2}
+.cat-card-wrap:hover .cat-tools{opacity:1}
+.mini{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:3px;cursor:pointer;color:var(--mut);font-family:inherit;line-height:0;transition:.15s;display:inline-flex;align-items:center;justify-content:center}
+.mini:hover{background:var(--hover);color:var(--txt);border-color:var(--pri)}
+.mini.dan:hover{background:var(--dan-bg);color:var(--dan-fg);border-color:var(--dan)}
+@media(hover:none){.cat-tools{opacity:1}}
+
+.chips-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.chip{background:color-mix(in srgb,var(--pri) 22%,var(--card));color:var(--pri);padding:4px 12px;border-radius:20px;font-size:12.5px;font-weight:600;word-break:break-word;border:1px solid color-mix(in srgb,var(--pri) 30%,transparent);animation:popIn .35s cubic-bezier(.2,.9,.3,1.1) both;display:inline-flex;align-items:center;gap:5px}
+
+.template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.template-card{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;transition:.22s cubic-bezier(.2,.9,.3,1.1);animation:bounceIn .45s cubic-bezier(.2,.9,.3,1.15) both;animation-delay:calc(var(--i,0)*50ms);position:relative;overflow:hidden;display:flex;flex-direction:column;gap:10px}
+.template-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,color-mix(in srgb,var(--amber) 14%,transparent),transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none}
+.template-card:hover{border-color:var(--amber);transform:translateY(-4px);box-shadow:0 12px 28px color-mix(in srgb,var(--amber) 18%,transparent)}
+.template-card:hover::before{opacity:1}
+.tc-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tc-name{font-weight:700;font-size:14.5px;word-break:break-word;display:flex;align-items:center;gap:7px}
+.tc-name svg{color:var(--amber);flex:0 0 auto}
+.tc-total{font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--amber),var(--orange));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;word-break:break-word}
+.tc-total span{font-size:12px;font-weight:500;-webkit-text-fill-color:var(--mut);background:none;color:var(--mut)}
+.tc-actions{display:flex;gap:5px;flex-wrap:wrap}
+
+.invoice-view{padding:22px}
+.invoice-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;border-bottom:2px solid var(--line);padding-bottom:14px;flex-wrap:wrap}
+.inv-title{font-size:18px;font-weight:800;letter-spacing:.3px;background:linear-gradient(135deg,var(--pri),#8b5cf6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:9px}
+.inv-title svg{color:var(--pri);-webkit-text-fill-color:initial}
+.inv-num{background:var(--card2);padding:6px 12px;border-radius:10px;font-family:monospace;font-size:13px;color:var(--mut);border:1px solid var(--line)}
+.invoice-summary{margin-top:18px;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:14px;max-width:440px;margin-inline-start:auto}
+.inv-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--line);gap:10px;flex-wrap:wrap;align-items:center}
+.inv-row:last-child{border-bottom:0}
+.inv-row.inv-total{border-top:2px solid var(--amber);margin-top:6px;padding-top:12px;font-size:16px}
+.inv-row.inv-total b{color:var(--warn-fg);font-size:18px}
+.inv-row input[type=number]{width:72px!important;display:inline-block!important;padding:4px 6px!important;font-size:12.5px!important;text-align:center}
+
+.inv-items{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card2)}
+.inv-item{display:flex;align-items:stretch;gap:10px;padding:12px 13px;border-bottom:1px solid var(--line);transition:background .18s;flex-wrap:wrap}
+.inv-item:last-child{border-bottom:0}
+.inv-item:hover{background:var(--hover)}
+.inv-item-main{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:5px}
+
+/* Invoice theme support */
+.invoice-view[data-inv-theme="dark"]{background:var(--card);color:var(--txt)}
+.invoice-view[data-inv-theme="light"]{background:#fff;color:#111}
+.inv-item-title{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap}
+.inv-item-label{font-weight:700;font-size:14px;word-break:break-word;overflow-wrap:anywhere;line-height:1.6;flex:1;min-width:0}
+.inv-item-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--mut)}
+.inv-item-meta b{color:var(--txt);font-weight:600}
+.inv-item-actions{display:flex;gap:5px;flex:0 0 auto;align-items:flex-start}
+.type-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:600;white-space:nowrap;background:color-mix(in srgb,var(--pri) 20%,var(--card));color:var(--pri);border:1px solid color-mix(in srgb,var(--pri) 35%,transparent)}
+
+.tool-pick-list{
+  max-height:340px;overflow:auto;border:1px solid var(--line);border-radius:12px;
+  background:var(--card2);padding:6px;margin-top:8px;-webkit-overflow-scrolling:touch;
+}
+.tool-pick-row{
+  display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:9px;
+  transition:background .18s;cursor:pointer;flex-wrap:wrap;
+}
+.tool-pick-row:hover{background:var(--hover)}
+.tool-pick-row.checked{background:color-mix(in srgb,var(--pri) 12%,var(--card2));border:1px solid color-mix(in srgb,var(--pri) 40%,var(--line))}
+.tool-pick-row input[type=checkbox]{
+  width:20px;height:20px;min-width:20px;max-width:20px;padding:0;margin:0;
+  accent-color:var(--pri);cursor:pointer;flex:0 0 auto;
+}
+.tool-pick-info{flex:1;min-width:0}
+.tool-pick-info b{display:block;font-size:14px;word-break:break-word}
+.tool-pick-info .hint{margin-top:2px}
+.tool-pick-qty{
+  width:64px!important;flex:0 0 auto;padding:6px 8px!important;
+  text-align:center;font-size:13px!important;min-width:0;
+}
+.tool-pick-qty:disabled{opacity:.4;cursor:not-allowed}
+.tool-pick-avail{font-size:11.5px;color:var(--mut);flex:0 0 auto;min-width:60px;text-align:left}
+
+.job-card{
+  background:var(--card2);border:1px solid var(--line);border-radius:14px;
+  padding:14px;margin-bottom:10px;transition:.2s;
+  animation:slideUp .4s cubic-bezier(.2,.9,.3,1) both;
+  animation-delay:calc(var(--i,0)*50ms);
+}
+.job-card:hover{border-color:color-mix(in srgb,var(--pri) 40%,var(--line));box-shadow:var(--shadow-sm)}
+.job-card.closed{opacity:.75;border-style:dashed}
+.job-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.job-title{font-weight:700;font-size:15px;word-break:break-word;display:flex;align-items:center;gap:8px}
+.job-title svg{color:var(--pri);flex:0 0 auto}
+.job-title.closed svg{color:var(--mut)}
+.job-meta{font-size:12.5px;color:var(--mut);margin-top:4px;display:flex;gap:12px;flex-wrap:wrap}
+.job-actions{display:flex;gap:6px;flex-wrap:wrap}
+
+.return-list{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card2)}
+.return-row{display:flex;align-items:center;gap:11px;padding:10px 12px;border-bottom:1px solid var(--line);transition:.18s}
+.return-row:last-child{border-bottom:0}
+.return-row:hover{background:var(--hover)}
+.return-row.returned{background:color-mix(in srgb,var(--ok) 10%,transparent);opacity:.75}
+.return-row.returned .return-name{text-decoration:line-through;color:var(--mut)}
+.return-cb{width:22px;height:22px;min-width:22px;max-width:22px;padding:0;margin:0;accent-color:var(--ok);cursor:pointer;flex:0 0 auto}
+.return-name{flex:1;min-width:0;font-weight:600;word-break:break-word}
+.return-name small{font-weight:400;color:var(--mut);font-size:11.5px;display:block}
+.return-qty{font-size:12px;color:var(--mut);flex:0 0 auto}
+
+.fab{
+  position:fixed;bottom:20px;right:20px;width:58px;height:58px;border-radius:50%;
+  background:linear-gradient(135deg,var(--pri),#8b5cf6);color:#fff;border:0;
+  line-height:0;cursor:pointer;display:none;z-index:70;
+  transition:transform .25s,box-shadow .25s,background .3s;
+  align-items:center;justify-content:center;font-family:inherit;padding:0;
+  box-shadow:0 10px 26px rgba(217,119,6,.5);
+  animation:popIn .4s cubic-bezier(.2,.9,.3,1.2) both;
+}
+[data-theme="dark"] .fab{background:linear-gradient(135deg,#d97706,#b45309);box-shadow:0 10px 26px rgba(217,119,6,.5)}
+.fab.show{display:flex}
+.fab::before{content:'';position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--pri);opacity:.4;animation:pulseRing 2s ease infinite}
+[data-theme="dark"] .fab::before{border-color:#d97706}
+.fab:hover{transform:scale(1.08) rotate(90deg);box-shadow:0 14px 34px rgba(217,119,6,.6)}
+.fab:active{transform:scale(.92) rotate(90deg)}
+.fab svg{width:26px;height:26px;stroke-width:2.5}
+
+.toast{
+  position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--card);color:var(--txt);padding:11px 20px;border-radius:12px;
+  box-shadow:var(--shadow);border:1px solid var(--line);z-index:300;opacity:0;
+  transition:.35s cubic-bezier(.2,.9,.3,1.1);font-size:13.5px;
+  max-width:calc(100% - 40px);text-align:center;pointer-events:none;
+  display:flex;align-items:center;gap:8px;justify-content:center;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:color-mix(in srgb,var(--ok) 50%,var(--line));color:var(--ok-fg)}
+.toast.dan{border-color:color-mix(in srgb,var(--dan) 50%,var(--line));color:var(--dan-fg)}
+.toast.warn{border-color:color-mix(in srgb,var(--warn) 50%,var(--line));color:var(--warn-fg)}
+
+.imp-option{display:flex;align-items:flex-start;gap:11px;background:var(--card2);border:1px solid var(--line);border-radius:11px;padding:13px;cursor:pointer;transition:.18s;margin-bottom:8px}
+.imp-option:hover{border-color:var(--pri);background:var(--hover)}
+.imp-option.selected{border-color:var(--pri);background:color-mix(in srgb,var(--pri) 8%,var(--card2));box-shadow:0 0 0 3px color-mix(in srgb,var(--pri) 20%,transparent)}
+.imp-option input[type=radio]{width:auto;margin-top:3px;accent-color:var(--pri);flex:0 0 auto}
+.imp-option-body{flex:1;min-width:0}
+.imp-option-body b{display:block;margin-bottom:3px}
+
+.srch-box{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:14px;animation:slideDown .3s ease both}
+
+@media(max-width:480px){
+  main{padding:12px;padding-bottom:110px}
+  .card{padding:13px}
+  .invoice-view{padding:14px}
+  .modal{padding:6px}
+  .modal-body{padding:12px}
+  .modal-foot{padding:10px 12px}
+  .kpi b{font-size:20px}
+  table{font-size:12.5px}
+  th,td{padding:7px 8px}
+  .btn{padding:7px 11px;font-size:13px}
+  .btn.sm{padding:4px 8px;font-size:12px}
+  .btn.icon{padding:6px;width:34px;height:34px}
+  .fab{width:54px;height:54px;bottom:18px;right:16px}
+  .toast{bottom:88px;font-size:13px;padding:10px 16px}
+  .tool-pick-qty{width:56px!important}
+  .inv-item{padding:10px}
+  .inv-item-actions{width:100%;justify-content:flex-end}
+  .sec-head{flex-direction:column;align-items:flex-start;gap:8px}
+  .sec-head .sec-actions{width:100%}
+  .sec-head .sec-actions .btn{flex:1}
+}
+
+@media print{
+  header,.drawer,.drawer-backdrop,.fab,.no-print,.toast,.crumb{display:none!important}
+  body{background:#fff;color:#000}
+  main{padding:0}
+  .card{border:0;padding:0;margin:0 0 12px;animation:none!important;background:#fff;color:#000}
+  .modal{display:none!important}
+  .invoice-view{padding:0}
+}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+
+<!-- Cloud Sync Support -->
+<script>
+// Cloud configuration - set API_BASE to enable cloud mode
+const API_BASE = 'https://kargah-anbar-api.itsfordecosahand.workers.dev';
+// Shared key sent with every API call (the Worker rejects requests without it).
+const API_KEY = 'wYb9XPNSAGPE7ZLEe98hypIfzo8cvZZfHWte6Ug6myGutboJ';
+</script>
+
+<style>
+/* Cloud sync indicator */
+#cloud-sync-indicator {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+#cloud-sync-indicator.cloud-active { display: flex; }
+#cloud-sync-indicator.syncing { background: #fef3c7; color: #92400e; animation: pulse 1s infinite; }
+#cloud-sync-indicator.synced { background: #dcfce7; color: #166534; }
+#cloud-sync-indicator.error { background: #fee2e2; color: #991b1b; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+</style></head>
+<body>
+<!-- Cloud Sync Indicator -->
+<div id="cloud-sync-indicator">
+  <span id="cloud-status-icon">☁️</span>
+  <span id="cloud-status-text">حالت ابری</span>
+</div>
+
+<header>
+  <div class="header-inner">
+    <button class="hamburger" id="hambBtn" aria-label="باز کردن منو">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="brand">
+      <span class="brand-ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+      <span class="brand-txt">انبارگردانی کارگاه</span>
+    </div>
+    <button class="theme-btn" id="themeBtn" aria-label="تغییر تم"></button>
+  </div>
+</header>
+
+<div class="drawer-backdrop" id="drawerBg"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <span>منوی اصلی</span>
+    <button class="x" id="drawerClose" aria-label="بستن"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <nav id="drawerNav">
+    <button data-tab="dash" style="--i:0"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span><span>داشبورد</span></button>
+    <button data-tab="tools" style="--i:1"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.6 5.6L3 18l3 3 6.1-6.1a4 4 0 0 0 5.6-5.6l-2.4 2.4-1.7-.3-.3-1.7 2.4-2.4z"/></svg></span><span>ابزار</span></button>
+    <button data-tab="jobs" style="--i:2"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span>کارها</span><span class="badge-n" id="navJobsBadge"></span></button>
+    <button data-tab="sheets" style="--i:3"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span><span>ورق</span></button>
+    <button data-tab="hardware" style="--i:4"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg></span><span>یراق</span></button>
+    <button data-tab="calc" style="--i:5"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="11" x2="8.01" y2="11"/><line x1="12" y1="11" x2="12.01" y2="11"/><line x1="16" y1="11" x2="16.01" y2="11"/><line x1="8" y1="15" x2="8.01" y2="15"/><line x1="12" y1="15" x2="12.01" y2="15"/><line x1="16" y1="15" x2="16.01" y2="15"/><line x1="8" y1="19" x2="16" y2="19"/></svg></span><span>محاسبه و فاکتور</span></button>
+    <button data-tab="settings" style="--i:6"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span><span>پشتیبان‌گیری</span></button>
+  
+    <a class="home" href="../" title="بازگشت به لانچر"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/></svg></span><span>همه برنامه‌ها</span></a>
+  </nav>
+</aside>
+
+<main id="view"></main>
+
+<button id="fab" class="fab" aria-label="افزودن">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+
+<div id="modal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span class="modal-title"></span>
+      <button class="x" id="modalX" aria-label="بستن"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body"></div>
+    <div class="modal-foot"></div>
+  </div>
+</div>
+
+<input type="file" id="fileIn" accept="application/json" hidden>
+
+<script>
+/* =========================================================
+   Icons
+========================================================= */
+function ico(n, s){
+  s = s || 18;
+  const P = {
+    phone:'<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><line x1="10.5" y1="18.4" x2="13.5" y2="18.4"/>',
+    menu:'<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>',
+    x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+    sun:'<circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="6.34" y1="17.66" x2="4.93" y2="19.07"/><line x1="19.07" y1="4.93" x2="17.66" y2="6.34"/>',
+    moon:'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+    tool:'<path d="M14.7 6.3a4 4 0 0 0-5.6 5.6L3 18l3 3 6.1-6.1a4 4 0 0 0 5.6-5.6l-2.4 2.4-1.7-.3-.3-1.7 2.4-2.4z"/>',
+    file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>',
+    bolt:'<path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/>',
+    calc:'<rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="11" x2="8.01" y2="11"/><line x1="12" y1="11" x2="12.01" y2="11"/><line x1="16" y1="11" x2="16.01" y2="11"/><line x1="8" y1="15" x2="8.01" y2="15"/><line x1="12" y1="15" x2="12.01" y2="15"/><line x1="16" y1="15" x2="16.01" y2="15"/><line x1="8" y1="19" x2="16" y2="19"/>',
+    save:'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>',
+    plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+    pencil:'<path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>',
+    trash:'<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+    search:'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+    print:'<polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',
+    down:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+    up:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
+    target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+    alert:'<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+    lock:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+    unlock:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>',
+    check:'<polyline points="20 6 9 17 4 12"/>',
+    checkC:'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+    arrowL:'<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
+    arrowR:'<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
+    inbox:'<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+    copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+    receipt:'<path d="M4 2v20l4-2 4 2 4-2 4 2V2l-4 2-4-2-4 2z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="14" x2="14" y2="14"/>',
+    folder:'<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
+    layers:'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+    chart:'<line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/>',
+    swap:'<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+    info:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>',
+    play:'<polygon points="6 3 20 12 6 21 6 3"/>',
+    clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    playCircle:'<circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>',
+    listChecks:'<path d="M11 12H3"/><path d="M16 6H3"/><path d="M16 18H3"/><polyline points="18 9 20 11 24 7" transform="translate(-5,0)"/>',
+    merge:'<circle cx="7" cy="7" r="3"/><circle cx="7" cy="17" r="3"/><path d="M21 7h-6M21 17h-6"/><path d="M15 7c-3 0-5 3-5 5s2 5 5 5"/>',
+    replace:'<path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 6.7 2.9L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-6.7-2.9L3 16"/><path d="M3 21v-5h5"/>',
+    home:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+    chevron:'<polyline points="9 18 15 12 9 6"/>'
+  };
+  return `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]||''}</svg>`;
+}
+const empty = (msg) => `<div class="empty">${ico('inbox', 42)}<div>${msg}</div></div>`;
+
+/* =========================================================
+   Theme
+========================================================= */
+const KEY = 'kargah_anbar_v8';
+const THEME_KEY = 'kargah_theme';
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  const btn = document.getElementById('themeBtn');
+  btn.innerHTML = t === 'dark' ? ico('sun', 20) : ico('moon', 20);
+  try{ localStorage.setItem(THEME_KEY, t); }catch(_){}
+  const meta = document.querySelector('meta[name=theme-color]');
+  if (meta) meta.setAttribute('content', t === 'dark' ? '#0b1220' : '#f1f5f9');
+}
+(function(){ let t='dark'; try{ t = localStorage.getItem(THEME_KEY) || 'dark'; }catch(_){} setTheme(t); })();
+document.getElementById('themeBtn').onclick = () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  setTheme(cur === 'dark' ? 'light' : 'dark');
+  toast(cur === 'dark' ? 'تم روشن فعال شد' : 'تم تاریک فعال شد', 'ok');
+};
+
+/* =========================================================
+   State
+========================================================= */
+const state = {
+  tools: [], sheets: [], hardware: [], templates: [], jobs: [],
+  ui: {
+    tab:'dash',
+    toolCat:null,
+    sheetsCat:null, sheetsSub:null,
+    hardwareCat:null, hardwareSub:null,
+    showSheetSearch:false,
+    openTemplate:null, openJob:null, jobFilter:'open'
+  },
+  wizard: null,
+  pendingImport: null,
+  importMode: 'merge'
+};
+
+const uid   = () => Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-3);
+const esc   = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num   = v => { const n = parseFloat(String(v ?? '').replace(/[^\d.\-]/g,'')); return isNaN(n) ? 0 : n; };
+const fmt   = n => new Intl.NumberFormat('fa-IR',{maximumFractionDigits:2}).format(num(n));
+const fmtInt= n => new Intl.NumberFormat('fa-IR',{maximumFractionDigits:0}).format(num(n));
+const faNow = () => new Date().toLocaleDateString('fa-IR');
+const uniq  = arr => [...new Set(arr.filter(Boolean))];
+
+// Invoice number counter (persisted in localStorage)
+const INV_COUNTER_KEY = 'kargah_inv_counter';
+async function getInvoiceNumber(templateId){
+  // Use cloud if available
+  if (typeof getInvoiceNumberCloud === 'function') {
+    return await getInvoiceNumberCloud(templateId);
+  }
+  // Local fallback
+  let count = parseInt(localStorage.getItem(INV_COUNTER_KEY) || '0', 10);
+  const prefix = 'inv_num_' + templateId.slice(0,8);
+  const stored = localStorage.getItem(prefix);
+  if (!stored){
+    count++;
+    localStorage.setItem(INV_COUNTER_KEY, String(count));
+    localStorage.setItem(prefix, String(count));
+  }
+  return String(count).padStart(3,'0');
+}
+function getNextInvoiceNumber(){
+  let count = parseInt(localStorage.getItem(INV_COUNTER_KEY) || '0', 10) + 1;
+  return String(count).padStart(3,'0');
+}
+function assignInvoiceNumber(templateId){
+  const prefix = 'inv_num_' + templateId.slice(0,8);
+  if (!localStorage.getItem(prefix)){
+    let count = parseInt(localStorage.getItem(INV_COUNTER_KEY) || '0', 10);
+    count++;
+    localStorage.setItem(INV_COUNTER_KEY, String(count));
+    localStorage.setItem(prefix, String(count));
+  }
+}
+/* Number shown in the invoice header. Stored on the template itself (t.invNum)
+   so it survives cloud sync and stays identical on every device. */
+function invoiceNumberFor(t){
+  const pad = n => String(n).padStart(3, '0');
+  if (t.invNum) return pad(t.invNum);
+  const prefix = 'inv_num_' + t.id.slice(0,8);
+  let stored = null;
+  try { stored = localStorage.getItem(prefix); } catch(_){}
+  if (stored){
+    t.invNum = pad(stored);
+    return t.invNum;
+  }
+  let count = 0;
+  try { count = parseInt(localStorage.getItem(INV_COUNTER_KEY) || '0', 10) || 0; } catch(_){}
+  count++;
+  try {
+    localStorage.setItem(INV_COUNTER_KEY, String(count));
+    localStorage.setItem(prefix, String(count));
+  } catch(_){}
+  t.invNum = pad(count);
+  save();
+  return t.invNum;
+}
+
+function save() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify({
+      tools: state.tools, sheets: state.sheets,
+      hardware: state.hardware, templates: state.templates, jobs: state.jobs
+    }));
+    queueSyncToCloud();
+  } catch(e) { console.warn(e); }
+}
+/* =========================================================
+   Cloud sync: pull full state from API, then push local edits
+========================================================= */
+const CLOUD_TABLES = ['tools', 'sheets', 'hardware', 'templates', 'jobs'];
+const SYNC_KEY = 'kargah_last_sync_ids';   // row ids seen at the last successful pull
+
+function loadSyncedIds(){
+  try { return JSON.parse(localStorage.getItem(SYNC_KEY) || '{}'); }
+  catch(_){ return {}; }
+}
+function storeSyncedIds(idsByTable){
+  try { localStorage.setItem(SYNC_KEY, JSON.stringify(idsByTable)); } catch(_){}
+}
+function idsOf(rows){ return rows.map(r => r && r.id).filter(Boolean); }
+
+/* Merge cloud rows with the local copy.
+   localWins = false -> the server copy wins for rows both sides have
+   localWins = true  -> this device's copy wins (we are about to push it)
+   A row that the last sync knew about but the server no longer returns was
+   deleted on another device -> it is dropped in both modes.                */
+function mergeRows(prevIds, cloudRows, localRows, localWins){
+  const inCloud = new Set(cloudRows.map(r => r && r.id));
+  const synced = new Set(prevIds || []);
+  const localList = (localRows || []).filter(r => r && r.id);
+  const localIds = new Set(localList.map(r => r.id));
+
+  // Rows this device holds:
+  //   both sides have it -> our copy or theirs (localWins)
+  //   only we have it    -> brand new here (not yet synced) or deleted elsewhere
+  const keepLocal = localList.filter(r =>
+    inCloud.has(r.id) ? !!localWins : !synced.has(r.id));
+
+  // Rows only the server knows. A row we never synced is new (another device
+  // made it) -> take it. A row we synced but no longer hold was deleted here
+  // -> must NOT come back, otherwise a delete never leaves the database.
+  const takeCloud = (cloudRows || []).filter(r =>
+    r && r.id && (localIds.has(r.id) ? !localWins : !synced.has(r.id)));
+
+  return keepLocal.concat(takeCloud);
+}
+
+let cloudPulled = false;    // true once the first pull finishes (success or not)
+let cloudPushQueued = false;// user edited before that first pull landed
+let cloudPushTimer = null;
+let cloudRetryTimer = null;
+let cloudWarned = false;    // only warn the user once per session
+let cloudDirty = false;     // local edits the server has not confirmed yet
+let cloudBusy = false;      // one sync at a time
+let editGen = 0;            // bumped on every local edit
+
+function cloudUnreachable(reason){
+  console.warn('Cloud sync unavailable:', reason);
+  if (cloudWarned) return;
+  cloudWarned = true;
+  try {
+    toast('همگام‌سازی ابری در دسترس نیست — داده‌ها روی همین دستگاه ذخیره و بعداً ارسال می‌شود', 'warn');
+  } catch(_){}
+}
+
+function cloudOn(){ return typeof API_BASE !== 'undefined' && API_BASE; }
+
+/* Everything the Worker needs to accept a request. A non-JSON / HTML reply
+   means Cloudflare Access is asking for a login instead of the data. */
+function apiOptions(extra){
+  return Object.assign({
+    headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY }
+  }, extra || {});
+}
+function readJson(res){
+  const type = (res.headers.get('content-type') || '');
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  if (type.indexOf('json') === -1) throw new Error('Auth required (login page)');
+  return res.json();
+}
+
+function load() {
+  try {
+    loadFromLocalStorage();
+    render();
+    if (cloudOn()) syncFromCloud();
+  } catch(e) {
+    console.warn(e);
+    render();
+  }
+}
+
+function persistLocal(){
+  try {
+    localStorage.setItem(KEY, JSON.stringify({
+      tools: state.tools, sheets: state.sheets,
+      hardware: state.hardware, templates: state.templates, jobs: state.jobs
+    }));
+  } catch(e) {}
+}
+
+function localHasData(){
+  return !!(state.tools.length || state.sheets.length || state.hardware.length ||
+            state.templates.length || state.jobs.length);
+}
+
+function idsBy(tableRows){
+  const o = {};
+  CLOUD_TABLES.forEach(t => { o[t] = idsOf(tableRows[t] || []); });
+  return o;
+}
+
+/* A failed request must never be mistaken for an empty table: pushing then
+   would wipe the whole database. Every pull reports whether it succeeded. */
+function pullTable(t){
+  return fetch(API_BASE + '/api/' + t, apiOptions())
+    .then(r => readJson(r))
+    .then(d => {
+      if (!Array.isArray(d)) throw new Error('bad payload for ' + t);
+      return { ok: true, rows: d };
+    })
+    .catch(err => ({ ok: false, err: err }));
+}
+
+function pullAll(){
+  return Promise.all(CLOUD_TABLES.map(pullTable)).then(results => {
+    const failed = results.filter(r => !r.ok);
+    if (failed.length) {
+      const e = failed[0].err;
+      return { ok: false, err: (e && e.message) || 'request failed' };
+    }
+    const byTable = {};
+    CLOUD_TABLES.forEach((t, i) => { byTable[t] = results[i].rows; });
+    return { ok: true, byTable: byTable };
+  });
+}
+
+const cloudHasAny = byTable => CLOUD_TABLES.some(t => (byTable[t] || []).length > 0);
+
+/* Fold freshly pulled rows into `state`. Returns true when something changed. */
+function adoptCloud(byTable, localWins){
+  const prev = loadSyncedIds();
+  const snap = () => JSON.stringify([state.tools, state.sheets, state.hardware, state.templates, state.jobs]);
+  const before = snap();
+  CLOUD_TABLES.forEach(t => {
+    state[t] = mergeRows(prev[t], byTable[t] || [], state[t] || [], localWins);
+  });
+  const changed = before !== snap();
+  storeSyncedIds(idsBy(byTable));
+  if (changed) { persistLocal(); render(); }
+  return changed;
+}
+
+function retryLater(fn){
+  if (cloudRetryTimer) return;
+  cloudRetryTimer = setTimeout(() => { cloudRetryTimer = null; fn(); }, 5000);
+}
+
+/* Pull on load: take the server's copy — unless this device already edited
+   something while the pull was still in flight. */
+function syncFromCloud() {
+  if (!cloudOn()) return Promise.resolve();
+  return pullAll().then(res => {
+    if (!res.ok) {
+      cloudUnreachable('pull failed: ' + res.err);
+      cloudPulled = true;
+      if (cloudPushQueued || cloudDirty) retryLater(syncFromCloud);
+      return;
+    }
+    cloudPulled = true;
+    if (cloudPushQueued) {                 // an edit is already waiting to go up
+      cloudPushQueued = false;
+      return syncToCloud();
+    }
+    if (!cloudHasAny(res.byTable)) {       // empty database
+      storeSyncedIds(idsBy(res.byTable));
+      if (localHasData()) return syncToCloud();   // seed it from this device
+      return;
+    }
+    adoptCloud(res.byTable, false);
+  }).catch(err => {
+    cloudUnreachable(err && err.message);
+    cloudPulled = true;
+    if (cloudPushQueued || cloudDirty) retryLater(syncFromCloud);
+  });
+}
+
+// Never push before the first pull finishes, otherwise a fresh device
+// would wipe the whole cloud database with its empty state.
+function queueSyncToCloud(){
+  if (!cloudOn()) return;
+  editGen++; cloudDirty = true;
+  if (!cloudPulled) { cloudPushQueued = true; return; }
+  clearTimeout(cloudPushTimer);
+  cloudPushTimer = setTimeout(syncToCloud, 400);
+}
+
+/* Pull first, reconcile, then replace every table in one atomic PUT.
+   The pre-push pull is exactly what makes deletions stick: rows this device
+   still holds but the server no longer returns were removed elsewhere, so
+   they are dropped instead of being uploaded back.                          */
+function syncToCloud(){
+  if (!cloudOn() || cloudBusy) return Promise.resolve();
+  cloudBusy = true;
+  const gen = editGen;
+  return pullAll().then(res => {
+    if (!res.ok) {
+      cloudUnreachable('push skipped — pull failed: ' + res.err);
+      if (cloudDirty) retryLater(syncToCloud);
+      return;
+    }
+    cloudPulled = true;
+    if (cloudHasAny(res.byTable)) adoptCloud(res.byTable, true);
+    else storeSyncedIds(idsBy(res.byTable));
+
+    const snapshot = {
+      tools: state.tools, sheets: state.sheets, hardware: state.hardware,
+      templates: state.templates, jobs: state.jobs
+    };
+    return Promise.all(CLOUD_TABLES.map(t =>
+      fetch(API_BASE + '/api/' + t, apiOptions({
+        method: 'PUT',
+        body: JSON.stringify(snapshot[t])
+      })).then(r => readJson(r))
+    )).then(() => {
+      storeSyncedIds(idsBy(snapshot));
+      cloudPushQueued = false;
+      if (editGen === gen) cloudDirty = false;
+      else retryLater(syncToCloud);        // edited while the push was running
+      console.log('Cloud sync OK');
+    });
+  }).catch(err => cloudUnreachable(err && err.message))
+    .finally(() => { cloudBusy = false; });
+}
+
+/* Offline support: keep trying to flush local edits until one succeeds. */
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', () => { if (cloudDirty) syncToCloud(); });
+  setInterval(() => {
+    if (cloudDirty && !cloudBusy && (typeof navigator === 'undefined' || navigator.onLine !== false)) syncToCloud();
+  }, 20000);
+}
+
+function loadFromLocalStorage() {
+  try {
+    const d = JSON.parse(localStorage.getItem(KEY) || '{}');
+    state.tools     = d.tools     || [];
+    state.sheets    = d.sheets    || [];
+    state.hardware  = d.hardware  || [];
+    state.templates = d.templates || [];
+    state.jobs      = d.jobs      || [];
+  } catch(e) { console.warn(e); }
+}
+
+/* =========================================================
+   Toast
+========================================================= */
+let toastEl = null;
+function toast(msg, type){
+  if (toastEl) toastEl.remove();
+  type = type || 'info';
+  const ic = type === 'ok' ? 'check' : (type === 'dan' || type === 'warn') ? 'alert' : 'info';
+  toastEl = document.createElement('div');
+  toastEl.className = 'toast ' + (type === 'info' ? '' : type);
+  toastEl.innerHTML = ico(ic, 16) + '<span>' + esc(msg) + '</span>';
+  document.body.appendChild(toastEl);
+  requestAnimationFrame(() => toastEl.classList.add('show'));
+  setTimeout(() => {
+    if (!toastEl) return;
+    toastEl.classList.remove('show');
+    const el = toastEl; toastEl = null;
+    setTimeout(() => el.remove(), 400);
+  }, 2400);
+}
+
+/* =========================================================
+   Helpers
+========================================================= */
+const hwTotal = h => num(h.qty) * (h.unit === 'pack' ? (num(h.packSize)||1) : 1);
+const templateOf = id => state.templates.find(t => t.id === id);
+const toolOf = id => state.tools.find(t => t.id === id);
+const jobOf = id => state.jobs.find(j => j.id === id);
+
+function toolOut(id){
+  let n = 0;
+  state.jobs.forEach(j => {
+    if (j.closed) return;
+    (j.items||[]).forEach(it => { if (it.toolId === id && !it.returned) n += num(it.qty); });
+  });
+  return n;
+}
+const toolAvail = t => num(t.total) - toolOut(t.id);
+
+function templateTotals(t){
+  const sub = (t.items||[]).reduce((a,it) => a + num(it.qty) * num(it.unitPrice), 0);
+  const disc = sub * num(t.discountPercent) / 100;
+  const taxBase = sub - disc;
+  const tax = taxBase * num(t.taxPercent) / 100;
+  return { sub, disc, tax, total: taxBase + tax };
+}
+
+function jobPendingCount(j){ return (j.items||[]).filter(i => !i.returned).length; }
+function jobsOpen(){ return state.jobs.filter(j => !j.closed); }
+function jobsClosed(){ return state.jobs.filter(j => j.closed); }
+
+/* Reusable section head */
+function secHead(icon, title, count, extraActions){
+  return `<div class="sec-head">
+    <div class="sec-title-main">${ico(icon,18)}<span>${title}</span>${count!=null?`<span class="sec-count">(${fmt(count)})</span>`:''}</div>
+    <div class="sec-actions">${extraActions||''}</div>
+  </div>`;
+}
+
+/* Reusable crumbs */
+function crumbs(list){
+  return `<div class="crumb">${list.map((c,i) => {
+    const sep = i > 0 ? '<span class="crumb-sep">›</span>' : '';
+    if (c.current) return `${sep}<span class="crumb-item current">${esc(c.label)}</span>`;
+    return `${sep}<button class="crumb-item" data-act="${c.act}" ${c.type?`data-type="${c.type}"`:''}>${c.icon?ico(c.icon,12):''} ${esc(c.label)}</button>`;
+  }).join('')}</div>`;
+}
+
+/* Cat card HTML */
+function catCardHTML(name, count, unitLabel, i, actName, actType){
+  return `<div class="cat-card-wrap" style="--i:${i}">
+    <button type="button" class="cat-card" data-act="${actName}" data-val="${esc(name)}">
+      <span class="cat-name">${ico('folder',15)} ${esc(name)}</span>
+      <span class="cat-count">${fmt(count)} ${unitLabel}</span>
+    </button>
+    <div class="cat-tools">
+      <button type="button" class="mini" data-act="rename-cat" data-type="${actType}" data-val="${esc(name)}" title="تغییر نام">${ico('pencil',12)}</button>
+      <button type="button" class="mini dan" data-act="del-cat" data-type="${actType}" data-val="${esc(name)}" title="حذف">${ico('trash',12)}</button>
+    </div>
+  </div>`;
+}
+
+function subCardHTML(name, count, unitLabel, i, actName, type, cat){
+  return `<div class="cat-card-wrap" style="--i:${i}">
+    <button type="button" class="cat-card" data-act="${actName}" data-val="${esc(name)}">
+      <span class="cat-name">${ico('layers',15)} ${esc(name)}</span>
+      <span class="cat-count">${fmt(count)} ${unitLabel}</span>
+    </button>
+    <div class="cat-tools">
+      <button type="button" class="mini" data-act="rename-sub" data-type="${type}" data-cat="${esc(cat)}" data-val="${esc(name)}" title="تغییر نام">${ico('pencil',12)}</button>
+      <button type="button" class="mini dan" data-act="del-sub" data-type="${type}" data-cat="${esc(cat)}" data-val="${esc(name)}" title="حذف">${ico('trash',12)}</button>
+    </div>
+  </div>`;
+}
+
+function newCatCardHTML(actName, type, label, i){
+  return `<div class="cat-card-wrap" style="--i:${i}">
+    <button type="button" class="cat-card new" data-act="${actName}" data-type="${type}">
+      <span class="cat-name">${ico('plus',18)} ${esc(label)}</span>
+    </button>
+  </div>`;
+}
+
+/* =========================================================
+   Drawer
+========================================================= */
+const drawer = document.getElementById('drawer');
+const drawerBg = document.getElementById('drawerBg');
+function openDrawer(){ drawer.classList.add('show'); drawerBg.classList.add('show'); }
+function closeDrawer(){ drawer.classList.remove('show'); drawerBg.classList.remove('show'); }
+document.getElementById('hambBtn').onclick = openDrawer;
+document.getElementById('drawerClose').onclick = closeDrawer;
+drawerBg.onclick = closeDrawer;
+
+document.getElementById('drawerNav').addEventListener('click', e => {
+  const b = e.target.closest('button[data-tab]');
+  if (!b) return;
+  state.ui.tab = b.dataset.tab;
+  state.ui.toolCat = null;
+  state.ui.sheetsCat = null; state.ui.sheetsSub = null;
+  state.ui.hardwareCat = null; state.ui.hardwareSub = null;
+  state.ui.openTemplate = null;
+  state.ui.openJob = null;
+  state.ui.showSheetSearch = false;
+  closeDrawer();
+  setTimeout(render, 120);
+});
+
+/* =========================================================
+   Modal
+========================================================= */
+function setModal(title, titleIcon, bodyHTML, footHTML){
+  const m = document.getElementById('modal');
+  const tEl = m.querySelector('.modal-title');
+  tEl.innerHTML = (titleIcon ? ico(titleIcon,18) : '') + '<span>' + esc(title) + '</span>';
+  m.querySelector('.modal-body').innerHTML = bodyHTML;
+  m.querySelector('.modal-foot').innerHTML = footHTML || '';
+  m.classList.add('show');
+}
+function closeModal(){
+  document.getElementById('modal').classList.remove('show');
+  state.wizard = null;
+  state.pendingImport = null;
+}
+document.getElementById('modalX').onclick = closeModal;
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target.id === 'modal') closeModal();
+});
+
+/* =========================================================
+   Render
+========================================================= */
+function updateNavBadge(){
+  const n = jobsOpen().length;
+  const el = document.getElementById('navJobsBadge');
+  if (el){ el.textContent = n > 0 ? String(n) : ''; el.style.display = n > 0 ? '' : 'none'; }
+}
+
+function render(){
+  document.querySelectorAll('#drawerNav button').forEach(b =>
+    b.classList.toggle('active', b.dataset.tab === state.ui.tab));
+
+  const v = document.getElementById('view');
+  const t = state.ui.tab;
+  let html = '';
+  if      (t === 'dash')     html = viewDash();
+  else if (t === 'tools')    html = viewTools();
+  else if (t === 'jobs')     html = state.ui.openJob ? viewJobDetail(state.ui.openJob) : viewJobs();
+  else if (t === 'sheets')   html = viewSheets();
+  else if (t === 'hardware') html = viewHardware();
+  else if (t === 'calc')     html = state.ui.openTemplate ? viewTemplate(state.ui.openTemplate) : viewCalc();
+  else if (t === 'settings') html = viewSettings();
+
+  v.innerHTML = `<div class="view-enter">${html}</div>`;
+
+  const fab = document.getElementById('fab');
+  const showFab = (t === 'tools' && state.ui.toolCat) ||
+                  (t === 'jobs' && !state.ui.openJob) ||
+                  (t === 'sheets' && state.ui.sheetsCat && state.ui.sheetsSub) ||
+                  (t === 'hardware' && state.ui.hardwareCat && state.ui.hardwareSub) ||
+                  (t === 'calc' && !state.ui.openTemplate);
+  fab.classList.toggle('show', showFab);
+
+  updateNavBadge();
+  const hdr = document.querySelector('header');
+  const offset = hdr ? hdr.offsetHeight + 4 : 4;
+  window.scrollTo({top: offset, behavior:'instant'});
+}
+
+/* =========================================================
+   Dashboard
+========================================================= */
+function viewDash(){
+  const sheetQty = state.sheets.reduce((a,s) => a + num(s.qty), 0);
+  const tplTotal = state.templates.reduce((a,t) => a + templateTotals(t).total, 0);
+  const open = jobsOpen();
+  const totalPending = open.reduce((a,j) => a + jobPendingCount(j), 0);
+  const lowSheets = state.sheets.filter(s => num(s.qty) <= 2 && num(s.qty) > 0);
+  const outSheets = state.sheets.filter(s => num(s.qty) <= 0);
+
+  return `
+  <div class="kpis">
+    <button type="button" class="kpi" style="--d:0;cursor:pointer" data-act="nav-tools">
+      <div class="kpi-head">${ico('tool',14)}<span>ابزار ثبتشده</span></div>
+      <b>${fmt(state.tools.length)}</b><small>در انبار کارگاه</small>
+    </button>
+    <button type="button" class="kpi" style="--d:1;cursor:pointer" data-act="nav-jobs">
+      <div class="kpi-head">${ico('playCircle',14)}<span>کارهای باز</span></div>
+      <b>${fmt(open.length)}</b><small>${fmt(totalPending)} ابزار در امانت</small>
+    </button>
+    <button type="button" class="kpi" style="--d:2;cursor:pointer" data-act="nav-sheets">
+      <div class="kpi-head">${ico('file',14)}<span>انواع ورق</span></div>
+      <b>${fmt(state.sheets.length)}</b><small>${fmt(sheetQty)} تخته موجود</small>
+    </button>
+    <button type="button" class="kpi" style="--d:3;cursor:pointer" data-act="nav-hardware">
+      <div class="kpi-head">${ico('bolt',14)}<span>یراق و پیچ</span></div>
+      <b>${fmt(state.hardware.length)}</b><small>موجودی یراق‌آلات</small>
+    </button>
+    <button type="button" class="kpi" style="--d:4;cursor:pointer" data-act="nav-calc">
+      <div class="kpi-head">${ico('calc',14)}<span>قالبهای محاسبه</span></div>
+      <b>${fmt(state.templates.length)}</b><small>جمع ${fmtInt(tplTotal)} تومان</small>
+    </button>
+  </div>
+
+  ${open.length ? `
+  <div class="card" style="--d:0">
+    ${secHead('playCircle', 'کارهای در جریان', open.length)}
+    ${open.slice(0,4).map((j,i) => `
+      <div class="job-card" style="--i:${i}">
+        <div class="job-head">
+          <div style="min-width:0;flex:1">
+            <div class="job-title">${ico('flag' in window ? 'tool' : 'tool',16)} ${esc(j.name)}</div>
+            <div class="job-meta">
+              <span>${ico('clock',13)} ${esc(j.date)}</span>
+              <span>${ico('tool',13)} ${fmt(jobPendingCount(j))} ابزار تحویل‌نشده</span>
+            </div>
+          </div>
+          <button class="btn sm pri no-print" data-act="open-job" data-id="${j.id}">مشاهده</button>
+        </div>
+      </div>
+    `).join('')}
+  </div>` : ''}
+
+  ${(lowSheets.length || outSheets.length) ? `
+  <div class="card" style="--d:1">
+    ${secHead('alert', 'هشدار موجودی ورق', null)}
+    <div class="table-wrap"><table>
+      <thead><tr><th>دسته</th><th>زیردسته</th><th>ابعاد</th><th>تعداد</th></tr></thead>
+      <tbody>
+      ${[...outSheets, ...lowSheets].map((s,i) => `<tr style="--i:${i}">
+        <td class="wrap">${esc(s.category)}</td>
+        <td class="wrap">${esc(s.sub||'—')}</td>
+        <td>${fmt(s.width)} × ${fmt(s.length)}</td>
+        <td>${num(s.qty) <= 0 ? '<span class="badge dan">تمام شد</span>' : '<span class="badge warn">'+fmt(s.qty)+'</span>'}</td>
+      </tr>`).join('')}
+      </tbody>
+    </table></div>
+  </div>` : ''}
+  `;
+}
+
+/* =========================================================
+   TOOLS
+========================================================= */
+function viewTools(){
+  return state.ui.toolCat ? viewToolsList() : viewToolsCats();
+}
+
+function viewToolsCats(){
+  const cats = uniq(state.tools.map(t => t.category)).sort((a,b) => a.localeCompare(b,'fa'));
+  const totalTools = state.tools.length;
+
+  return `
+  <div class="card" style="--d:0">
+    ${secHead('tool', 'دسته‌های ابزار', cats.length,
+      `<button class="btn amber sm" data-act="new-cat" data-type="tool">${ico('plus',14)} دسته جدید</button>`
+    )}
+    ${cats.length ? `
+      <div class="card-grid">
+        ${cats.map((c,i) => {
+          const count = state.tools.filter(t => t.category === c).length;
+          return catCardHTML(c, count, 'ابزار', i, 'pick-tool-cat', 'tool');
+        }).join('')}
+        ${newCatCardHTML('new-cat', 'tool', 'دسته جدید', cats.length)}
+      </div>
+    ` : `
+      <div class="card-grid">
+        ${newCatCardHTML('new-cat', 'tool', 'دسته جدید', 0)}
+      </div>
+    `}
+    <div class="hint" style="margin-top:16px;display:flex;gap:8px;align-items:flex-start">
+      <span style="flex:0 0 auto;color:var(--pri);margin-top:2px">${ico('info',16)}</span>
+      <span>یک دسته را انتخاب کنید تا ابزارهای آن را ببینید و ابزار جدید اضافه کنید. مجموع ${fmt(totalTools)} ابزار در ${fmt(cats.length)} دسته.</span>
+    </div>
+  </div>`;
+}
+
+function viewToolsList(){
+  const cat = state.ui.toolCat;
+  const list = state.tools.filter(t => t.category === cat);
+
+  return `
+  <div class="card" style="--d:0">
+    ${crumbs([
+      { label:'همه دسته‌ها', act:'back-tools', icon:'home' },
+      { label:cat, current:true }
+    ])}
+    ${secHead('tool', `ابزارهای «${cat}»`, list.length,
+      `<button class="btn amber sm" data-act="new-tool-in-cat" data-cat="${esc(cat)}">${ico('plus',14)} ابزار جدید</button>`
+    )}
+    ${list.length ? `
+      <div class="item-list">
+        ${list.map((t,i) => {
+          const o = toolOut(t.id), av = toolAvail(t);
+          return `<div class="item-row" style="--i:${i}">
+            <div class="item-row-name">
+              ${esc(t.name)}
+              ${o ? `<small>${ico('clock',11)} ${fmt(o)} عدد در امانت • موجود ${fmt(av)}</small>` : ''}
+            </div>
+            <div class="item-row-qty">${fmt(t.total)} عدد</div>
+            <div class="item-row-actions no-print">
+              <button class="btn sm" data-act="tool-edit" data-id="${t.id}" title="ویرایش">${ico('pencil',14)}</button>
+              <button class="btn sm dan" data-act="del" data-type="tool" data-id="${t.id}" title="حذف">${ico('trash',14)}</button>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    ` : empty('ابزاری در این دسته ثبت نشده. با دکمه «ابزار جدید» شروع کنید.')}
+  </div>`;
+}
+
+function openToolForm(editId, presetCat){
+  const t = editId ? state.tools.find(x => x.id === editId) : null;
+  const cats = uniq(state.tools.map(x=>x.category));
+  const cat = t ? t.category : (presetCat || '');
+  setModal(
+    t ? 'ویرایش ابزار' : 'افزودن ابزار جدید', 'tool',
+    `<form id="toolForm" class="grid">
+      <div style="grid-column:1/-1"><label>نام ابزار *</label>
+        <input name="name" required placeholder="مثلا فرز انگشتی" value="${t?esc(t.name):''}"></div>
+      <div style="grid-column:1/-1"><label>دسته *</label>
+        <input name="category" list="toolCats" required placeholder="برقی / دستی" value="${esc(cat)}">
+        <datalist id="toolCats">${cats.map(c=>`<option value="${esc(c)}">`).join('')}</datalist></div>
+      <div><label>تعداد *</label>
+        <input name="total" type="number" min="0" step="1" required value="${t?esc(t.total):1}"></div>
+      <div style="grid-column:1/-1"><label>توضیح</label>
+        <input name="note" value="${t?esc(t.note||''):''}"></div>
+    </form>`,
+    `<button class="btn pri" data-modal="save-tool" data-id="${editId||''}">${ico(t?'check':'plus',15)} ${t?'ذخیره':'افزودن'}</button>
+     <button class="btn" data-modal="close">انصراف</button>`
+  );
+}
+
+function doSaveTool(id){
+  const f = document.getElementById('toolForm');
+  if (!f || !f.reportValidity()) return;
+  const fd = new FormData(f);
+  const g = k => (fd.get(k) || '').toString().trim();
+  const obj = {
+    name: g('name'), category: g('category'),
+    total: num(g('total')), note: g('note')
+  };
+  if (!obj.category){ toast('دسته را وارد کنید', 'warn'); return; }
+  if (id) Object.assign(state.tools.find(x => x.id === id), obj);
+  else    state.tools.unshift({ id: uid(), ...obj });
+  save(); closeModal();
+  if (!id) state.ui.toolCat = obj.category;
+  render();
+  toast(id ? 'ذخیره شد' : 'ابزار افزوده شد', 'ok');
+}
+
+/* =========================================================
+   JOBS
+========================================================= */
+function viewJobs(){
+  const filter = state.ui.jobFilter || 'open';
+  const list = filter === 'open' ? jobsOpen() : filter === 'closed' ? jobsClosed() : state.jobs;
+
+  const actions = `
+    <button class="btn ${filter==='open'?'pri':''} sm" data-act="job-filter" data-val="open">
+      ${ico('play',13)} باز (${fmt(jobsOpen().length)})
+    </button>
+    <button class="btn ${filter==='closed'?'pri':''} sm" data-act="job-filter" data-val="closed">
+      ${ico('lock',13)} بسته (${fmt(jobsClosed().length)})
+    </button>
+    <button class="btn ${filter==='all'?'pri':''} sm" data-act="job-filter" data-val="all">
+      ${ico('layers',13)} همه (${fmt(state.jobs.length)})
+    </button>
+  `;
+
+  return `
+  <div class="card" style="--d:0">
+    ${secHead('playCircle', 'کارها', list.length, actions)}
+    <button class="btn amber lg" data-act="start-job" style="width:100%;margin-bottom:14px">
+      ${ico('playCircle',20)} شروع کار جدید
+    </button>
+
+    ${list.length ? list.map((j,i) => {
+      const pend = jobPendingCount(j);
+      const total = (j.items||[]).length;
+      return `<div class="job-card ${j.closed?'closed':''}" style="--i:${i}">
+        <div class="job-head">
+          <div style="min-width:0;flex:1">
+            <div class="job-title ${j.closed?'closed':''}">
+              ${ico(j.closed?'lock':'unlock',16)} ${esc(j.name)}
+            </div>
+            <div class="job-meta">
+              <span>${ico('clock',13)} ${esc(j.date)}</span>
+              <span>${ico('tool',13)} ${fmt(total)} قلم
+                ${pend ? `<span class="badge warn" style="margin-inline-start:5px">${fmt(pend)} تحویل‌نشده</span>`
+                        : (total ? `<span class="badge ok" style="margin-inline-start:5px">همه تحویل شد</span>` : '')}
+              </span>
+            </div>
+          </div>
+          <div class="job-actions no-print">
+            <button class="btn sm ${j.closed?'':'pri'}" data-act="open-job" data-id="${j.id}">
+              ${ico(j.closed?'info':'listChecks',14)} ${j.closed?'مشاهده':'ادامه / پایان'}
+            </button>
+            <button class="btn sm dan" data-act="del" data-type="job" data-id="${j.id}" title="حذف">${ico('trash',14)}</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('') : empty('کاری ثبت نشده. با دکمه «شروع کار جدید» آغاز کنید.')}
+  </div>`;
+}
+
+function openStartJobModal(){
+  const avail = state.tools.filter(t => num(t.total) > 0);
+  if (!avail.length){
+    toast('ابتدا از تب «ابزار» تعدادی ابزار تعریف کنید', 'warn');
+    return;
+  }
+  setModal('شروع کار جدید', 'playCircle', `
+    <div>
+      <label>نام کار *</label>
+      <input id="startJobName" required placeholder="مثلا کابینت آشپزخانه آقای رضایی">
+    </div>
+
+    <div style="margin-top:14px">
+      <label>جستجوی سریع ابزار</label>
+      <input id="startSearch" placeholder="نام ابزار..." autocomplete="off">
+    </div>
+
+    <div class="hint" style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+      <span>ابزارهای موردنیاز را تیک بزنید:</span>
+      <span id="startSelCount" style="font-weight:700;color:var(--pri)">۰ انتخاب شده</span>
+    </div>
+
+    <div class="tool-pick-list" id="startList">
+      ${avail.map(t => {
+        const av = toolAvail(t);
+        return `<label class="tool-pick-row" data-name="${esc((t.name+' '+(t.category||'')).toLowerCase())}">
+          <input type="checkbox" class="start-cb" data-id="${t.id}">
+          <span class="tool-pick-info">
+            <b>${esc(t.name)}</b>
+            <span class="hint">${esc(t.category||'بدون دسته')} • موجود: ${fmt(av)}</span>
+          </span>
+          <input type="number" class="tool-pick-qty" data-id="${t.id}"
+                 min="1" max="${av}" value="1" disabled>
+        </label>`;
+      }).join('')}
+    </div>
+  `, `
+    <button class="btn pri" data-modal="confirm-start">${ico('check',15)} شروع کار</button>
+    <button class="btn" data-modal="close">انصراف</button>
+  `);
+  setTimeout(wireStartJobModal, 30);
+}
+
+function wireStartJobModal(){
+  const list = document.getElementById('startList');
+  if (!list) return;
+  const updateCount = () => {
+    const n = list.querySelectorAll('.start-cb:checked').length;
+    document.getElementById('startSelCount').textContent = fmt(n) + ' انتخاب شده';
+  };
+  list.addEventListener('change', e => {
+    if (e.target.classList.contains('start-cb')){
+      const row = e.target.closest('.tool-pick-row');
+      const qty = row.querySelector('.tool-pick-qty');
+      const max = num(qty.getAttribute('max'));
+      if (e.target.checked){
+        row.classList.add('checked');
+        qty.disabled = false;
+        if (num(qty.value) < 1) qty.value = 1;
+        if (num(qty.value) > max) qty.value = max;
+      } else {
+        row.classList.remove('checked');
+        qty.disabled = true;
+      }
+      updateCount();
+    }
+  });
+  const search = document.getElementById('startSearch');
+  if (search){
+    search.addEventListener('input', e => {
+      const q = e.target.value.trim().toLowerCase();
+      list.querySelectorAll('.tool-pick-row').forEach(r => {
+        const n = r.getAttribute('data-name') || '';
+        r.style.display = (!q || n.includes(q)) ? '' : 'none';
+      });
+    });
+  }
+}
+
+function confirmStartJob(){
+  const name = document.getElementById('startJobName').value.trim();
+  if (!name){ toast('نام کار را وارد کنید', 'warn'); return; }
+
+  const list = document.getElementById('startList');
+  const picked = [];
+  list.querySelectorAll('.tool-pick-row').forEach(row => {
+    const cb = row.querySelector('.start-cb');
+    if (!cb || !cb.checked) return;
+    const id = cb.dataset.id;
+    const qty = num(row.querySelector('.tool-pick-qty').value);
+    const t = toolOf(id);
+    if (!t) return;
+    const av = toolAvail(t);
+    if (qty <= 0 || qty > av){
+      picked.push({ id, qty, av, name: t.name, invalid: true });
+      return;
+    }
+    picked.push({ id, qty, name: t.name, invalid: false });
+  });
+
+  const invalid = picked.filter(p => p.invalid);
+  if (invalid.length){
+    toast(`تعداد «${invalid[0].name}» نامعتبر است (موجود: ${invalid[0].av})`, 'dan');
+    return;
+  }
+  if (!picked.length){
+    toast('حداقل یک ابزار انتخاب کنید', 'warn');
+    return;
+  }
+
+  const job = {
+    id: uid(), name, date: faNow(),
+    items: picked.map(p => ({
+      id: uid(), toolId: p.id, qty: p.qty, returned: false, outAt: faNow()
+    })),
+    closed: false
+  };
+  state.jobs.unshift(job);
+  save(); closeModal();
+  toast(`${fmt(picked.length)} ابزار برای کار «${name}» ثبت شد`, 'ok');
+  state.ui.tab = 'jobs';
+  state.ui.openJob = job.id;
+  render();
+}
+
+function viewJobDetail(jobId){
+  const j = jobOf(jobId);
+  if (!j){ state.ui.openJob = null; return viewJobs(); }
+  const items = j.items || [];
+  const pending = items.filter(i => !i.returned);
+  const done = items.filter(i => i.returned);
+  const total = items.length;
+  const progress = total ? Math.round((done.length / total) * 100) : 0;
+
+  return `
+  <div class="row no-print" style="margin-bottom:12px">
+    <button class="btn" data-act="close-job-view">${ico('arrowR',15)} بازگشت</button>
+    <button class="btn" onclick="window.print()">${ico('print',15)} چاپ</button>
+  </div>
+
+  <div class="card" style="--d:0">
+    <div class="job-title ${j.closed?'closed':''}" style="font-size:17px">
+      ${ico(j.closed?'lock':'unlock',20)} ${esc(j.name)}
+    </div>
+    <div class="job-meta" style="margin-top:8px">
+      <span>${ico('clock',13)} تاریخ شروع: ${esc(j.date)}</span>
+      <span>${ico('tool',13)} ${fmt(total)} قلم</span>
+    </div>
+
+    ${total ? `
+    <div style="margin-top:14px">
+      <div class="row" style="justify-content:space-between;font-size:12.5px;color:var(--mut)">
+        <span>پیشرفت تحویل</span>
+        <span><b style="color:${done.length===total?'var(--ok-fg)':'var(--warn-fg)'}">${fmt(done.length)} / ${fmt(total)}</b></span>
+      </div>
+      <div style="height:8px;background:var(--card2);border-radius:20px;overflow:hidden;margin-top:6px">
+        <div class="job-detail-progress" style="height:100%;width:${progress}%;background:linear-gradient(90deg,var(--pri),#8b5cf6);border-radius:20px;transition:width .4s ease"></div>
+      </div>
+    </div>` : ''}
+  </div>
+
+  <div class="card" style="--d:1">
+    ${secHead('listChecks', 'چک‌لیست تحویل ابزارها', null,
+      pending.length ? `<button class="btn sm ok no-print" data-act="return-all" data-id="${j.id}">${ico('checkC',14)} تحویل همه</button>` : ''
+    )}
+    ${items.length ? `
+    <div class="return-list">
+      ${items.map((it,i) => {
+        const t = toolOf(it.toolId);
+        return `<label class="return-row ${it.returned?'returned':''}" style="--i:${i}">
+          <input type="checkbox" class="return-cb" data-job="${j.id}" data-item="${it.id}"
+                 ${it.returned?'checked':''} ${j.closed?'disabled':''}>
+          <span class="return-name">
+            ${esc(t?t.name:'(حذف‌شده)')}
+            <small>تعداد ${fmt(it.qty)} • خروج: ${esc(it.outAt||'—')}${it.inAt?' • ورود: '+esc(it.inAt):''}</small>
+          </span>
+          <span class="return-qty">${it.returned ? `<span class="badge ok">تحویل شد</span>` : `<span class="badge warn">در امانت</span>`}</span>
+        </label>`;
+      }).join('')}
+    </div>` : empty('ابزاری برای این کار ثبت نشده')}
+  </div>
+
+  <div class="card no-print" style="--d:2">
+    <div class="row" style="justify-content:space-between">
+      ${!j.closed
+        ? `<button class="btn ${pending.length?'warn':'ok'}" data-act="job-close" data-id="${j.id}">
+             ${ico(pending.length?'lock':'checkC',15)}
+             ${pending.length ? 'پایان کار با '+fmt(pending.length)+' ابزار تحویل‌نشده' : 'پایان کار'}
+           </button>`
+        : `<button class="btn warn" data-act="job-reopen" data-id="${j.id}">${ico('unlock',15)} بازکردن مجدد کار</button>`}
+      <button class="btn dan" data-act="del" data-type="job" data-id="${j.id}">${ico('trash',15)} حذف کار</button>
+    </div>
+  </div>`;
+}
+
+/* =========================================================
+   SHEETS
+========================================================= */
+function viewSheets(){
+  if (state.ui.sheetsCat && state.ui.sheetsSub) return viewSheetsList();
+  if (state.ui.sheetsCat) return viewSheetsSubs();
+  return viewSheetsCats();
+}
+
+function viewSheetsCats(){
+  const cats = uniq(state.sheets.map(s => s.category)).sort((a,b) => a.localeCompare(b,'fa'));
+
+  return `
+  <div class="card" style="--d:0">
+    ${secHead('file', 'دسته‌های ورق', cats.length,
+      `<button class="btn icon" data-act="toggle-sheet-search" title="جستجو">${ico('search',18)}</button>
+       <button class="btn amber sm" data-act="new-cat" data-type="sheet">${ico('plus',14)} دسته جدید</button>`
+    )}
+
+    ${state.ui.showSheetSearch ? renderSheetSearchBox() : ''}
+
+    ${cats.length ? `
+      <div class="card-grid">
+        ${cats.map((c,i) => {
+          const count = state.sheets.filter(s => s.category === c).length;
+          return catCardHTML(c, count, 'ردیف', i, 'pick-sheets-cat', 'sheet');
+        }).join('')}
+        ${newCatCardHTML('new-cat', 'sheet', 'دسته جدید', cats.length)}
+      </div>
+    ` : `
+      <div class="card-grid">
+        ${newCatCardHTML('new-cat', 'sheet', 'دسته جدید', 0)}
+      </div>
+    `}
+  </div>`;
+}
+
+function viewSheetsSubs(){
+  const cat = state.ui.sheetsCat;
+  const subs = uniq(state.sheets.filter(s => s.category === cat).map(s => s.sub)).sort((a,b) => a.localeCompare(b,'fa'));
+
+  return `
+  <div class="card" style="--d:0">
+    ${crumbs([
+      { label:'همه دسته‌ها', act:'back-sheets-cat', icon:'home' },
+      { label:cat, current:true }
+    ])}
+    ${secHead('layers', `زیردسته‌های «${cat}»`, subs.length,
+      `<button class="btn icon" data-act="toggle-sheet-search" title="جستجو">${ico('search',18)}</button>
+       <button class="btn amber sm" data-act="new-sub" data-type="sheet">${ico('plus',14)} زیردسته جدید</button>`
+    )}
+
+    ${state.ui.showSheetSearch ? renderSheetSearchBox() : ''}
+
+    ${subs.length ? `
+      <div class="card-grid">
+        ${subs.map((s,i) => {
+          const count = state.sheets.filter(x => x.category === cat && x.sub === s).length;
+          return subCardHTML(s, count, 'ردیف', i, 'pick-sheets-sub', 'sheet', cat);
+        }).join('')}
+        ${newCatCardHTML('new-sub', 'sheet', 'زیردسته جدید', subs.length)}
+      </div>
+    ` : `
+      <div class="card-grid">
+        ${newCatCardHTML('new-sub', 'sheet', 'زیردسته جدید', 0)}
+      </div>
+    `}
+  </div>`;
+}
+
+function viewSheetsList(){
+  const cat = state.ui.sheetsCat, sub = state.ui.sheetsSub;
+  const list = state.sheets.filter(s => s.category === cat && s.sub === sub);
+
+  return `
+  <div class="card" style="--d:0">
+    ${crumbs([
+      { label:'همه دسته‌ها', act:'back-sheets-cat', icon:'home' },
+      { label:cat, act:'back-sheets-sub' },
+      { label:sub, current:true }
+    ])}
+    ${secHead('file', `ورق‌های «${sub}»`, list.length,
+      `<button class="btn icon" data-act="toggle-sheet-search" title="جستجو">${ico('search',18)}</button>
+       <button class="btn amber sm" data-act="new-sheet-in-sub" data-cat="${esc(cat)}" data-sub="${esc(sub)}">${ico('plus',14)} ورق جدید</button>`
+    )}
+
+    ${state.ui.showSheetSearch ? renderSheetSearchBox() : ''}
+
+    ${list.length ? `
+      <div class="item-list">
+        ${list.map((s,i) => `
+          <div class="item-row" style="--i:${i}">
+            <div class="item-row-name">
+              عرض ${fmt(s.width)} × طول ${fmt(s.length)} سانتی‌متر
+              ${s.note ? `<small>${esc(s.note)}</small>` : ''}
+            </div>
+            <div class="item-row-qty">${fmt(s.qty)} تخته</div>
+            <div class="item-row-actions no-print">
+              <button class="btn sm" data-act="sheet-edit" data-id="${s.id}" title="ویرایش">${ico('pencil',14)}</button>
+              <button class="btn sm dan" data-act="del" data-type="sheet" data-id="${s.id}" title="حذف">${ico('trash',14)}</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    ` : empty('ورقی در این زیردسته ثبت نشده.')}
+  </div>`;
+}
+
+function renderSheetSearchBox(){
+  const q = state.ui.sq;
+  return `
+  <div class="srch-box">
+    <form data-form="sheet-search">
+      <div class="grid">
+        <div><label>عرض مورد نیاز (cm) *</label><input name="W" type="number" step="0.1" required value="${q?esc(q.W):''}"></div>
+        <div><label>طول مورد نیاز (cm) *</label><input name="L" type="number" step="0.1" required value="${q?esc(q.L):''}"></div>
+        <div><label>حالت</label>
+          <select name="mode">
+            <option value="near" ${!q||q.mode==='near'?'selected':''}>نزدیک‌ترین ابعاد</option>
+            <option value="exact" ${q&&q.mode==='exact'?'selected':''}>فقط دقیق</option>
+          </select></div>
+        <div><label>حد تحمل (%)</label><input name="tol" type="number" min="1" max="100" value="${q?esc(q.tol):'25'}"></div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn pri sm">${ico('search',14)} جستجو</button>
+        ${q?`<button type="button" class="btn sm" data-act="clear-sheet-search">${ico('x',14)} پاک</button>`:''}
+        <button type="button" class="btn sm" data-act="toggle-sheet-search">بستن</button>
+      </div>
+    </form>
+    <div id="sheetResults">${q ? renderSheetResults(q) : ''}</div>
+  </div>`;
+}
+
+function renderSheetResults(q){
+  const L = num(q.L), W = num(q.W);
+  const tol = (num(q.tol) || 25) / 100;
+
+  let rows = state.sheets.filter(s => num(s.qty) > 0).map(s => {
+    const sl = num(s.length), sw = num(s.width);
+    const dl = Math.abs(sl - L), dw = Math.abs(sw - W);
+    const exact = dl < 0.01 && dw < 0.01;
+    const fits  = sl >= L - 0.01 && sw >= W - 0.01;
+    const errL = dl / Math.max(L, 1), errW = dw / Math.max(W, 1);
+    let score = errL * 0.55 + errW * 0.45;
+    if (fits) score *= 0.5;
+    else score += (Math.max(0, L - sl)/Math.max(L,1) + Math.max(0, W - sw)/Math.max(W,1)) * 1.6;
+    return { ...s, dl, dw, exact, fits, score };
+  });
+
+  if (q.mode === 'exact') rows = rows.filter(r => r.exact);
+  else rows = rows.filter(r => r.exact || r.score <= tol);
+  rows.sort((a,b) => a.score - b.score || num(b.qty) - num(a.qty));
+  rows = rows.slice(0, 12);
+
+  if (!rows.length) return empty('موردی یافت نشد. حد تحمل را بیشتر کنید.');
+
+  return `
+  <div class="sec-title">${rows.length} پیشنهاد</div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>وضعیت</th><th>دسته</th><th>زیردسته</th><th>ابعاد</th><th>موجودی</th></tr></thead>
+    <tbody>
+    ${rows.map((r,i) => `<tr style="--i:${i}">
+      <td>${r.exact ? '<span class="badge ok">دقیق</span>'
+            : r.fits ? '<span class="badge warn">قابل برش</span>'
+            :          '<span class="badge mut">نزدیک</span>'}</td>
+      <td class="wrap"><b>${esc(r.category)}</b></td>
+      <td class="wrap">${esc(r.sub||'—')}</td>
+      <td>${fmt(r.width)} × ${fmt(r.length)}</td>
+      <td><span class="badge ${num(r.qty)<=2?'warn':'ok'}">${fmt(r.qty)}</span></td>
+    </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+/* =========================================================
+   HARDWARE
+========================================================= */
+function viewHardware(){
+  if (state.ui.hardwareCat && state.ui.hardwareSub) return viewHardwareList();
+  if (state.ui.hardwareCat) return viewHardwareSubs();
+  return viewHardwareCats();
+}
+
+function viewHardwareCats(){
+  const cats = uniq(state.hardware.map(h => h.category)).sort((a,b) => a.localeCompare(b,'fa'));
+
+  return `
+  <div class="card" style="--d:0">
+    ${secHead('bolt', 'دسته‌های یراق', cats.length,
+      `<button class="btn amber sm" data-act="new-cat" data-type="hardware">${ico('plus',14)} دسته جدید</button>`
+    )}
+    ${cats.length ? `
+      <div class="card-grid">
+        ${cats.map((c,i) => {
+          const count = state.hardware.filter(h => h.category === c).length;
+          return catCardHTML(c, count, 'ردیف', i, 'pick-hardware-cat', 'hardware');
+        }).join('')}
+        ${newCatCardHTML('new-cat', 'hardware', 'دسته جدید', cats.length)}
+      </div>
+    ` : `
+      <div class="card-grid">
+        ${newCatCardHTML('new-cat', 'hardware', 'دسته جدید', 0)}
+      </div>
+    `}
+  </div>`;
+}
+
+function viewHardwareSubs(){
+  const cat = state.ui.hardwareCat;
+  const subs = uniq(state.hardware.filter(h => h.category === cat).map(h => h.sub)).sort((a,b) => a.localeCompare(b,'fa'));
+
+  return `
+  <div class="card" style="--d:0">
+    ${crumbs([
+      { label:'همه دسته‌ها', act:'back-hardware-cat', icon:'home' },
+      { label:cat, current:true }
+    ])}
+    ${secHead('layers', `زیردسته‌های «${cat}»`, subs.length,
+      `<button class="btn amber sm" data-act="new-sub" data-type="hardware">${ico('plus',14)} زیردسته جدید</button>`
+    )}
+    ${subs.length ? `
+      <div class="card-grid">
+        ${subs.map((s,i) => {
+          const count = state.hardware.filter(x => x.category === cat && x.sub === s).length;
+          return subCardHTML(s, count, 'ردیف', i, 'pick-hardware-sub', 'hardware', cat);
+        }).join('')}
+        ${newCatCardHTML('new-sub', 'hardware', 'زیردسته جدید', subs.length)}
+      </div>
+    ` : `
+      <div class="card-grid">
+        ${newCatCardHTML('new-sub', 'hardware', 'زیردسته جدید', 0)}
+      </div>
+    `}
+  </div>`;
+}
+
+function viewHardwareList(){
+  const cat = state.ui.hardwareCat, sub = state.ui.hardwareSub;
+  const list = state.hardware.filter(h => h.category === cat && h.sub === sub);
+
+  return `
+  <div class="card" style="--d:0">
+    ${crumbs([
+      { label:'همه دسته‌ها', act:'back-hardware-cat', icon:'home' },
+      { label:cat, act:'back-hardware-sub' },
+      { label:sub, current:true }
+    ])}
+    ${secHead('bolt', `اقلام «${sub}»`, list.length,
+      `<button class="btn amber sm" data-act="new-hw-in-sub" data-cat="${esc(cat)}" data-sub="${esc(sub)}">${ico('plus',14)} یراق جدید</button>`
+    )}
+    ${list.length ? `
+      <div class="item-list">
+        ${list.map((h,i) => `
+          <div class="item-row" style="--i:${i}">
+            <div class="item-row-name">
+              ${esc(h.sub)}
+              ${h.note ? `<small>${esc(h.note)}</small>` : ''}
+            </div>
+            <div class="item-row-qty">${fmt(h.qty)} ${h.unit === 'pack' ? 'بسته' : 'عدد'}</div>
+            <div class="item-row-actions no-print">
+              <button class="btn sm" data-act="hw-edit" data-id="${h.id}" title="ویرایش">${ico('pencil',14)}</button>
+              <button class="btn sm dan" data-act="del" data-type="hardware" data-id="${h.id}" title="حذف">${ico('trash',14)}</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    ` : empty('یراقی در این زیردسته ثبت نشده.')}
+  </div>`;
+}
+
+/* =========================================================
+   Wizard
+========================================================= */
+function openWizard(type, editId, presetCat, presetSub){
+  state.wizard = { type, step:1, category:'', sub:'', editId: editId||null, data:{} };
+
+  if (editId){
+    const item = type === 'sheet'
+      ? state.sheets.find(s => s.id === editId)
+      : state.hardware.find(h => h.id === editId);
+    if (item){
+      state.wizard.category = item.category || '';
+      state.wizard.sub = item.sub || '';
+      state.wizard.step = 3;
+      Object.assign(state.wizard.data, item);
+    }
+  } else if (presetCat && presetSub){
+    state.wizard.category = presetCat;
+    state.wizard.sub = presetSub;
+    state.wizard.step = 3;
+  } else if (presetCat){
+    state.wizard.category = presetCat;
+    state.wizard.step = 2;
+  }
+
+  renderWizard();
+  document.getElementById('modal').classList.add('show');
+}
+
+function renderWizard(){
+  const w = state.wizard;
+  if (!w) return;
+  const modal = document.getElementById('modal');
+  const body = modal.querySelector('.modal-body');
+  const foot = modal.querySelector('.modal-foot');
+  const titleEl = modal.querySelector('.modal-title');
+
+  const typeName = w.type === 'sheet' ? 'ورق' : 'یراق';
+  titleEl.innerHTML = ico(w.type === 'sheet' ? 'file' : 'bolt',18) + '<span>' + (w.editId ? 'ویرایش ' : 'افزودن ') + typeName + '</span>';
+
+  const stepsHTML = `
+    <div class="wizard-steps" style="display:flex;gap:6px;margin-bottom:16px;font-size:12px;flex-wrap:wrap">
+      <div style="padding:5px 12px;border-radius:20px;background:${w.step===1?'var(--pri)':'var(--card2)'};color:${w.step===1?'#fff':'var(--mut)'};font-weight:600;border:1px solid ${w.step===1?'var(--pri)':'var(--line)'}">۱. دسته</div>
+      <div style="padding:5px 12px;border-radius:20px;background:${w.step===2?'var(--pri)':(w.step>2?'var(--ok-bg)':'var(--card2)')};color:${w.step===2?'#fff':(w.step>2?'var(--ok-fg)':'var(--mut)')};font-weight:600;border:1px solid ${w.step===2?'var(--pri)':(w.step>2?'color-mix(in srgb,var(--ok) 40%,var(--line))':'var(--line)')}">۲. زیردسته</div>
+      <div style="padding:5px 12px;border-radius:20px;background:${w.step===3?'var(--pri)':'var(--card2)'};color:${w.step===3?'#fff':'var(--mut)'};font-weight:600;border:1px solid ${w.step===3?'var(--pri)':'var(--line)'}">۳. مشخصات</div>
+    </div>`;
+
+  if (w.step === 1) body.innerHTML = stepsHTML + step1HTML();
+  else if (w.step === 2) body.innerHTML = stepsHTML + step2HTML();
+  else body.innerHTML = stepsHTML + step3HTML();
+
+  if (w.step === 1){
+    foot.innerHTML = `<button class="btn" data-w="cancel">انصراف</button>`;
+  } else if (w.step === 2){
+    foot.innerHTML = `
+      <button class="btn pri" data-w="next">مرحله بعد ${ico('arrowL',14)}</button>
+      <button class="btn" data-w="back">${ico('arrowR',14)} قبلی</button>
+      <button class="btn" data-w="cancel">انصراف</button>`;
+  } else {
+    foot.innerHTML = `
+      <button class="btn pri" data-w="save">${ico('check',15)} ${w.editId ? 'ذخیره' : 'ثبت'}</button>
+      <button class="btn" data-w="back">${ico('arrowR',14)} قبلی</button>
+      <button class="btn" data-w="cancel">انصراف</button>`;
+  }
+}
+
+function step1HTML(){
+  const w = state.wizard;
+  const items = w.type === 'sheet' ? state.sheets : state.hardware;
+  const cats = uniq(items.map(x => x.category)).sort((a,b)=>a.localeCompare(b,'fa'));
+  return `
+    <div class="hint" style="margin-bottom:12px">یک دسته انتخاب کنید:</div>
+    <div class="card-grid">
+      ${cats.map((c,i) => {
+        const count = items.filter(x => x.category === c).length;
+        return `<button type="button" class="cat-card" data-w="pick-cat" data-val="${esc(c)}" style="--i:${i}">
+          <span class="cat-name">${ico('folder',15)} ${esc(c)}</span>
+          <span class="cat-count">${fmt(count)} ردیف</span>
+        </button>`;
+      }).join('')}
+      <button type="button" class="cat-card new" data-w="new-cat" style="--i:${cats.length}">
+        <span class="cat-name">${ico('plus',18)} دسته جدید</span>
+      </button>
+    </div>
+    <div id="newCatBox" style="display:none;margin-top:14px;animation:slideDown .3s ease both">
+      <label>نام دسته جدید *</label>
+      <div class="row">
+        <input id="newCatInput" placeholder="مثلا MDF" style="flex:1;min-width:0">
+        <button type="button" class="btn pri" data-w="confirm-new-cat">${ico('check',14)} تأیید</button>
+      </div>
+    </div>`;
+}
+
+function step2HTML(){
+  const w = state.wizard;
+  const items = w.type === 'sheet' ? state.sheets : state.hardware;
+  const subs = uniq(items.filter(x => x.category === w.category).map(x => x.sub)).sort((a,b)=>a.localeCompare(b,'fa'));
+  return `
+    <div class="chips-row">
+      <span class="chip">${ico('folder',13)} ${esc(w.category)}</span>
+      <button type="button" class="chip" style="background:var(--card2);color:var(--mut);cursor:pointer;border:1px solid var(--line);font-family:inherit" data-w="back">${ico('swap',12)} تغییر</button>
+    </div>
+    <div class="hint" style="margin-bottom:12px">زیردسته را انتخاب کنید:</div>
+    <div class="card-grid">
+      ${subs.map((s,i) => {
+        const count = items.filter(x => x.category === w.category && x.sub === s).length;
+        return `<button type="button" class="cat-card" data-w="pick-sub" data-val="${esc(s)}" style="--i:${i}">
+          <span class="cat-name">${ico('layers',15)} ${esc(s)}</span>
+          <span class="cat-count">${fmt(count)} ردیف</span>
+        </button>`;
+      }).join('')}
+      <button type="button" class="cat-card new" data-w="new-sub" style="--i:${subs.length}">
+        <span class="cat-name">${ico('plus',18)} زیردسته جدید</span>
+      </button>
+    </div>
+    <div id="newSubBox" style="display:none;margin-top:14px;animation:slideDown .3s ease both">
+      <label>نام زیردسته جدید *</label>
+      <div class="row">
+        <input id="newSubInput" placeholder="مثلا روکش‌دار" style="flex:1;min-width:0">
+        <button type="button" class="btn pri" data-w="confirm-new-sub">${ico('check',14)} تأیید</button>
+      </div>
+    </div>`;
+}
+
+function step3HTML(){
+  const w = state.wizard;
+  const d = w.data || {};
+  const chips = `
+    <div class="chips-row">
+      <span class="chip">${ico('folder',13)} ${esc(w.category)}</span>
+      ${w.sub ? `<span class="chip">${ico('layers',13)} ${esc(w.sub)}</span>` : ''}
+    </div>`;
+
+  if (w.type === 'sheet'){
+    return chips + `
+      <form id="wizForm" class="grid">
+        <div><label>عرض (cm) *</label><input name="width" type="number" step="0.1" min="0" required value="${d.width!=null?esc(d.width):''}"></div>
+        <div><label>طول (cm) *</label><input name="length" type="number" step="0.1" min="0" required value="${d.length!=null?esc(d.length):''}"></div>
+        <div><label>تعداد *</label><input name="qty" type="number" step="1" min="0" required value="${d.qty!=null?esc(d.qty):''}"></div>
+        <div style="grid-column:1/-1"><label>توضیح</label><input name="note" value="${esc(d.note||'')}"></div>
+      </form>`;
+  }
+
+  return chips + `
+    <form id="wizForm" class="grid">
+      <div style="grid-column:1/-1"><label>شرح قلم *</label>
+        <input name="title" required placeholder="مثلا پیچ ام‌دی‌اف ۴×۱۶" value="${d.title!=null?esc(d.title||''):''}"></div>
+      <div><label>تعداد *</label><input name="qty" type="number" step="1" min="0" required value="${d.qty!=null?esc(d.qty):''}"></div>
+      <div><label>واحد</label>
+        <select name="unit">
+          <option value="piece" ${d.unit!=='pack'?'selected':''}>عدد</option>
+          <option value="pack"  ${d.unit==='pack'?'selected':''}>بسته</option>
+        </select></div>
+      <div><label>تعداد در هر بسته</label><input name="packSize" type="number" min="1" step="1" value="${d.packSize!=null?esc(d.packSize):''}"></div>
+      <div style="grid-column:1/-1"><label>توضیح</label><input name="note" value="${esc(d.note||'')}"></div>
+    </form>`;
+}
+
+function saveWizard(){
+  const w = state.wizard;
+  if (!w) return;
+  if (w.step === 2){
+    if (!w.category){ toast('دسته را انتخاب کنید', 'warn'); return; }
+    if (!w.sub){ toast('زیردسته را انتخاب کنید', 'warn'); return; }
+    w.step = 3; renderWizard(); return;
+  }
+  if (w.step === 3){
+    const f = document.getElementById('wizForm');
+    if (!f || !f.reportValidity()) return;
+    const fd = new FormData(f);
+    const g = k => (fd.get(k) || '').toString().trim();
+
+    if (w.type === 'sheet'){
+      const obj = {
+        category: w.category, sub: w.sub,
+        width: num(g('width')), length: num(g('length')),
+        qty: num(g('qty')), note: g('note')
+      };
+      if (w.editId) Object.assign(state.sheets.find(s => s.id === w.editId), obj);
+      else state.sheets.unshift({ id: uid(), ...obj });
+      state.ui.sheetsCat = w.category;
+      state.ui.sheetsSub = w.sub;
+    } else {
+      const obj = {
+        category: w.category, sub: w.sub, title: g('title'),
+        qty: num(g('qty')), unit: g('unit') || 'piece',
+        packSize: num(g('packSize')), note: g('note')
+      };
+      if (w.editId) Object.assign(state.hardware.find(h => h.id === w.editId), obj);
+      else state.hardware.unshift({ id: uid(), ...obj });
+      state.ui.hardwareCat = w.category;
+      state.ui.hardwareSub = w.sub;
+    }
+    save(); closeModal();
+    toast(w.editId ? 'ذخیره شد' : 'ثبت شد', 'ok');
+    render();
+  }
+}
+
+/* =========================================================
+   Category / sub editing
+========================================================= */
+function arrOfType(type){
+  if (type === 'tool') return state.tools;
+  if (type === 'sheet') return state.sheets;
+  return state.hardware;
+}
+function setArrOfType(type, arr){
+  if (type === 'tool') state.tools = arr;
+  else if (type === 'sheet') state.sheets = arr;
+  else state.hardware = arr;
+}
+function renameCategory(type, oldName){
+  const newName = prompt('نام جدید دسته:', oldName);
+  if (!newName || !newName.trim() || newName.trim() === oldName) return;
+  const arr = arrOfType(type);
+  arr.forEach(item => { if (item.category === oldName) item.category = newName.trim(); });
+  if (type === 'tool' && state.ui.toolCat === oldName) state.ui.toolCat = newName.trim();
+  if (type === 'sheet' && state.ui.sheetsCat === oldName) state.ui.sheetsCat = newName.trim();
+  if (type === 'hardware' && state.ui.hardwareCat === oldName) state.ui.hardwareCat = newName.trim();
+  save(); render();
+  toast('نام دسته تغییر یافت', 'ok');
+}
+function deleteCategory(type, name){
+  const arr = arrOfType(type);
+  const count = arr.filter(i => i.category === name).length;
+  if (!confirm(`حذف دسته «${name}» و ${count} ردیف مربوطه؟`)) return;
+  setArrOfType(type, arr.filter(i => i.category !== name));
+  if (type === 'tool' && state.ui.toolCat === name) state.ui.toolCat = null;
+  if (type === 'sheet' && state.ui.sheetsCat === name){ state.ui.sheetsCat = null; state.ui.sheetsSub = null; }
+  if (type === 'hardware' && state.ui.hardwareCat === name){ state.ui.hardwareCat = null; state.ui.hardwareSub = null; }
+  save(); render();
+  toast('دسته حذف شد', 'dan');
+}
+function renameSub(type, cat, oldSub){
+  const newName = prompt('نام جدید زیردسته:', oldSub);
+  if (!newName || !newName.trim() || newName.trim() === oldSub) return;
+  const arr = arrOfType(type);
+  arr.forEach(item => { if (item.category === cat && item.sub === oldSub) item.sub = newName.trim(); });
+  if (type === 'sheet' && state.ui.sheetsSub === oldSub) state.ui.sheetsSub = newName.trim();
+  if (type === 'hardware' && state.ui.hardwareSub === oldSub) state.ui.hardwareSub = newName.trim();
+  save(); render();
+  toast('نام زیردسته تغییر یافت', 'ok');
+}
+function deleteSub(type, cat, sub){
+  const arr = arrOfType(type);
+  const count = arr.filter(i => i.category === cat && i.sub === sub).length;
+  if (!confirm(`حذف زیردسته «${sub}» و ${count} ردیف مربوطه؟`)) return;
+  setArrOfType(type, arr.filter(i => !(i.category === cat && i.sub === sub)));
+  if (type === 'sheet' && state.ui.sheetsSub === sub) state.ui.sheetsSub = null;
+  if (type === 'hardware' && state.ui.hardwareSub === sub) state.ui.hardwareSub = null;
+  save(); render();
+  toast('زیردسته حذف شد', 'dan');
+}
+function createNewCategory(type){
+  const name = prompt('نام دسته جدید:');
+  if (!name || !name.trim()) return;
+  const n = name.trim();
+  if (type === 'tool'){
+    state.ui.toolCat = n;
+    openToolForm(null, n);
+    return;
+  }
+  state.wizard = { type, step:2, category:n, sub:'', editId:null, data:{} };
+  renderWizard();
+  document.getElementById('modal').classList.add('show');
+}
+function createNewSub(type){
+  if (type === 'sheet'){
+    const name = prompt(`نام زیردسته جدید برای «${state.ui.sheetsCat}»:`);
+    if (!name || !name.trim()) return;
+    state.wizard = { type, step:3, category:state.ui.sheetsCat, sub:name.trim(), editId:null, data:{} };
+    renderWizard();
+    document.getElementById('modal').classList.add('show');
+  } else {
+    const name = prompt(`نام زیردسته جدید برای «${state.ui.hardwareCat}»:`);
+    if (!name || !name.trim()) return;
+    state.wizard = { type, step:3, category:state.ui.hardwareCat, sub:name.trim(), editId:null, data:{} };
+    renderWizard();
+    document.getElementById('modal').classList.add('show');
+  }
+}
+
+/* =========================================================
+   CALC / Templates
+========================================================= */
+function viewCalc(){
+  const list = state.templates;
+  return `
+  <div class="card" style="--d:0">
+    ${secHead('calc', 'قالب‌های محاسبه و فاکتور', list.length,
+      `<button class="btn amber sm" data-act="new-template">${ico('plus',14)} قالب جدید</button>`
+    )}
+    ${list.length ? `
+      <div class="template-grid">
+      ${list.map((t,i) => {
+        const tt = templateTotals(t);
+        return `<div class="template-card" style="--i:${i}">
+          <div class="tc-head" data-act="open-template" data-id="${t.id}" style="cursor:pointer">
+            <span class="tc-name">${ico('folder',16)} ${esc(t.name)}</span>
+            <span class="badge mut">${fmt((t.items||[]).length)} قلم</span>
+          </div>
+          <div class="tc-total" data-act="open-template" data-id="${t.id}" style="cursor:pointer">${fmtInt(tt.total)} <span>تومان</span></div>
+          <div class="tc-actions no-print">
+            <button class="btn sm pri" data-act="open-template" data-id="${t.id}">${ico('pencil',13)} ویرایش</button>
+            <button class="btn sm" data-act="dup-template" data-id="${t.id}">${ico('copy',13)} کپی</button>
+            <button class="btn sm dan" data-act="del" data-type="template" data-id="${t.id}">${ico('trash',13)} حذف</button>
+          </div>
+        </div>`;
+      }).join('')}
+      </div>
+    ` : empty('قالبی ثبت نشده. با دکمه «قالب جدید» بسازید.')}
+  </div>`;
+}
+
+function viewTemplate(id){
+  const t = templateOf(id);
+  if (!t){ state.ui.openTemplate = null; return viewCalc(); }
+  const tt = templateTotals(t);
+  const items = t.items || [];
+  const invNum = invoiceNumberFor(t);
+
+  return `
+  <div class="row no-print" style="margin-bottom:12px">
+    <button class="btn" data-act="close-template">${ico('arrowR',15)} بازگشت</button>
+    <button class="btn amber" data-act="print-invoice" data-id="${t.id}">${ico('print',15)} چاپ / PDF</button>
+  </div>
+
+  <div class="card invoice-view" style="--d:0" ${t.invTheme ? 'data-inv-theme="'+t.invTheme+'"' : ''}>
+    <div class="invoice-head">
+      <div>
+        <div class="inv-title">${ico('receipt',22)} دکور سهند</div>
+        <div class="hint" style="margin-top:4px">${ico('info',13)} تاریخ صدور: ${faNow()}</div>
+      </div>
+      <div class="row no-print" style="gap:4px;align-items:center">
+        <div class="inv-num">#${invNum}</div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px">
+      <label>عنوان فاکتور / قالب</label>
+      <input value="${esc(t.name)}" data-tpl-name="${t.id}">
+    </div>
+
+    <h3 style="margin-top:20px;display:flex;align-items:center;gap:8px">${ico('layers',18)} اقلام فاکتور</h3>
+    ${items.length ? `
+      <div class="inv-items">
+        ${items.map((it,i) => `
+          <div class="inv-item" style="--i:${i}">
+            <div class="inv-item-main">
+              <div class="inv-item-title">
+                <span class="type-badge">${esc(it.type || 'قلم')}</span>
+                <span class="inv-item-label">${esc(it.label)}</span>
+              </div>
+              <div class="inv-item-meta">
+                <span>تعداد: <b>${fmt(it.qty)}</b> ${esc(it.unit||'')}</span>
+                <span>قیمت واحد: <b>${fmtInt(it.unitPrice)}</b> تومان</span>
+                <span>جمع: <b>${fmtInt(num(it.qty)*num(it.unitPrice))}</b> تومان</span>
+              </div>
+            </div>
+            <div class="inv-item-actions no-print">
+              <button class="btn sm" data-act="edit-item" data-tpl="${t.id}" data-item="${it.id}" title="ویرایش">${ico('pencil',14)}</button>
+              <button class="btn sm dan" data-act="del-item" data-tpl="${t.id}" data-item="${it.id}" title="حذف">${ico('trash',14)}</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    ` : empty('هنوز قلمی اضافه نشده')}
+
+    <div class="row no-print" style="margin-top:12px">
+      <button class="btn pri" data-act="add-item" data-tpl="${t.id}">${ico('plus',15)} افزودن قلم</button>
+    </div>
+
+    <div class="invoice-summary" id="invSummary" data-tpl-summary="${t.id}">
+      <div class="inv-row"><span>جمع کل اقلام:</span><b class="s-sub">${fmtInt(tt.sub)} تومان</b></div>
+      <div class="inv-row"><span>تخفیف (<input type="number" min="0" max="100" step="0.1" value="${esc(t.discountPercent||0)}" data-tpl-disc="${t.id}">٪):</span><b class="s-disc">${fmtInt(tt.disc)} تومان</b></div>
+      <div class="inv-row"><span>مالیات (<input type="number" min="0" max="100" step="0.1" value="${esc(t.taxPercent||0)}" data-tpl-tax="${t.id}">٪):</span><b class="s-tax">${fmtInt(tt.tax)} تومان</b></div>
+      <div class="inv-row inv-total"><span>مبلغ نهایی قابل پرداخت:</span><b class="s-total">${fmtInt(tt.total)} تومان</b></div>
+    </div>
+
+    <div style="margin-top:18px">
+      <label>توضیحات فاکتور</label>
+      <textarea rows="3" data-tpl-notes="${t.id}" placeholder="شرایط پرداخت، توضیحات اضافی...">${esc(t.notes||'')}</textarea>
+    </div>
+  </div>
+
+  <div class="card no-print" style="--d:1">
+    <button class="btn dan" data-act="del" data-type="template" data-id="${t.id}">${ico('trash',15)} حذف کامل قالب</button>
+  </div>`;
+}
+
+function updateInvSummary(t){
+  const el = document.querySelector(`[data-tpl-summary="${t.id}"]`);
+  if (!el) return;
+  const tt = templateTotals(t);
+  el.querySelector('.s-sub').textContent = fmtInt(tt.sub) + ' تومان';
+  el.querySelector('.s-disc').textContent = fmtInt(tt.disc) + ' تومان';
+  el.querySelector('.s-tax').textContent = fmtInt(tt.tax) + ' تومان';
+  el.querySelector('.s-total').textContent = fmtInt(tt.total) + ' تومان';
+}
+
+function openItemModal(tplId, itemId){
+  const t = templateOf(tplId); if (!t) return;
+  const it = itemId ? (t.items||[]).find(x => x.id === itemId) : null;
+  setModal(it ? 'ویرایش قلم' : 'افزودن قلم به فاکتور', 'receipt', `
+    <div class="grid">
+      <div><label>نوع قلم</label>
+        <input id="itType" value="${it?esc(it.type||''):''}" placeholder="مثلا ورق / یراق / خدمت"></div>
+      <div><label>تعداد *</label>
+        <input id="itQty" type="number" min="0" step="0.01" value="${it?esc(it.qty):1}"></div>
+      <div style="grid-column:1/-1"><label>شرح قلم *</label>
+        <input id="itLabel" value="${it?esc(it.label):''}" placeholder="مثلا ورق MDF روکش‌دار ۱۸۳×۲۴۴"></div>
+      <div><label>واحد</label>
+        <input id="itUnit" value="${it?esc(it.unit||''):''}" placeholder="عدد / تخته / متر"></div>
+      <div><label>قیمت واحد (تومان) *</label>
+        <input id="itPrice" type="number" min="0" step="1" value="${it?esc(it.unitPrice):0}"></div>
+    </div>
+  `, `<button class="btn pri" data-modal="save-item" data-tpl="${tplId}" data-item="${itemId||''}">${ico('check',15)} ذخیره</button>
+      <button class="btn" data-modal="close">انصراف</button>`);
+}
+
+function saveItem(tplId, itemId){
+  const t = templateOf(tplId); if (!t) return;
+  const type = document.getElementById('itType').value.trim();
+  const label = document.getElementById('itLabel').value.trim();
+  const qty = num(document.getElementById('itQty').value);
+  const unit = document.getElementById('itUnit').value.trim();
+  const unitPrice = num(document.getElementById('itPrice').value);
+  if (!label){ toast('شرح قلم را وارد کنید', 'warn'); return; }
+  if (qty <= 0){ toast('تعداد باید بزرگ‌تر از صفر باشد', 'warn'); return; }
+  t.items = t.items || [];
+  if (itemId){
+    const it = t.items.find(x => x.id === itemId);
+    if (it) Object.assign(it, {type, label, qty, unit, unitPrice});
+  } else {
+    t.items.push({ id: uid(), type, label, qty, unit, unitPrice });
+  }
+  save(); closeModal(); render();
+  toast(itemId ? 'قلم ویرایش شد' : 'قلم اضافه شد', 'ok');
+}
+
+async function printInvoice(tplId){
+  const t = templateOf(tplId); if (!t) return;
+  const tt = templateTotals(t);
+  const invNum = invoiceNumberFor(t);
+  const rows = (t.items||[]).map(it => `
+    <tr>
+      <td>${esc(it.type||'—')}</td>
+      <td style="word-break:break-word;white-space:normal;max-width:280px">${esc(it.label)}</td>
+      <td>${fmt(it.qty)}</td>
+      <td>${esc(it.unit||'—')}</td>
+      <td class="num-col">${fmtInt(it.unitPrice)}</td>
+      <td class="num-col">${fmtInt(num(it.qty)*num(it.unitPrice))}</td>
+    </tr>`).join('');
+
+  const html = `<!DOCTYPE html><html dir="rtl" lang="fa"><head><meta charset="utf-8">
+  <title>فاکتور - ${esc(t.name)}</title>
+  <style>
+    *{box-sizing:border-box}
+    body{font-family:Tahoma,"Segoe UI",sans-serif;padding:36px 42px;color:#111;background:#fff;direction:rtl;font-size:13.5px}
+    .head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #111;padding-bottom:14px;margin-bottom:20px}
+    h1{margin:0 0 4px;font-size:22px}
+    .sub{color:#666;font-size:12.5px}
+    .num{background:#f3f4f6;padding:6px 12px;border-radius:8px;font-family:monospace;font-size:13px}
+    .meta{display:flex;justify-content:space-between;margin-bottom:16px;font-size:13px;color:#333}
+    .title-box{background:#fafafa;border:1px solid #e5e7eb;border-radius:10px;padding:10px 14px;margin-bottom:16px}
+    .title-box b{font-size:15px}
+    table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px;table-layout:fixed}
+    th,td{border:1px solid #ddd;padding:9px 10px;text-align:right;word-break:break-word}
+    th{background:#f3f4f6;font-weight:700}
+    .num-col{font-family:monospace;direction:ltr;text-align:left}
+    .summary{margin-top:18px;background:#fafafa;border:1px solid #e5e7eb;border-radius:10px;padding:14px;max-width:440px;margin-inline-start:auto}
+    .summary .row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #ddd}
+    .summary .row:last-child{border-bottom:0}
+    .summary .big{border-top:2px solid #111;margin-top:6px;padding-top:12px;font-size:16px;font-weight:700}
+    .notes{margin-top:20px;padding:12px 14px;background:#f9fafb;border-inline-start:4px solid #2563eb;border-radius:6px;font-size:12.5px;color:#333}
+    @media print{ body{padding:20px 24px} }
+  <\/style><\/head><body>
+    <div class="head">
+      <div><h1>دکور سهند</h1><div class="sub">${faNow()}</div></div>
+      <div class="num">#${invNum}</div>
+    </div>
+    <div class="meta"><span>تاریخ صدور: ${faNow()}</span><span>تعداد اقلام: ${fmt((t.items||[]).length)}</span></div>
+    <div class="title-box"><b>عنوان:</b> ${esc(t.name)}</div>
+    <table>
+      <thead><tr>
+        <th style="width:80px">نوع</th>
+        <th>شرح</th>
+        <th style="width:70px">تعداد</th>
+        <th style="width:70px">واحد</th>
+        <th style="width:110px">قیمت واحد</th>
+        <th style="width:120px">جمع</th>
+      </tr></thead>
+      <tbody>${rows || '<tr><td colspan="6" style="text-align:center;color:#888">قلمی ثبت نشده</td></tr>'}</tbody>
+    </table>
+    <div class="summary">
+      <div class="row"><span>جمع کل اقلام:</span><span class="num-col">${fmtInt(tt.sub)} تومان</span></div>
+      <div class="row"><span>تخفیف (${fmt(t.discountPercent||0)}٪):</span><span class="num-col">${fmtInt(tt.disc)} تومان</span></div>
+      <div class="row"><span>مالیات (${fmt(t.taxPercent||0)}٪):</span><span class="num-col">${fmtInt(tt.tax)} تومان</span></div>
+      <div class="row big"><span>مبلغ نهایی قابل پرداخت:</span><span class="num-col">${fmtInt(tt.total)} تومان</span></div>
+    </div>
+    ${t.notes ? `<div class="notes"><b>توضیحات:</b> ${esc(t.notes)}</div>` : ''}
+  <\/body><\/html>`;
+
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0';
+  document.body.appendChild(iframe);
+  const doc = iframe.contentWindow.document;
+  doc.open(); doc.write(html); doc.close();
+  setTimeout(() => {
+    try { iframe.contentWindow.focus(); iframe.contentWindow.print(); } catch(_){}
+    setTimeout(() => iframe.remove(), 1800);
+  }, 450);
+  toast('در حال آماده‌سازی PDF...', 'ok');
+}
+
+/* =========================================================
+   Settings
+========================================================= */
+function viewSettings(){
+  const totals = {
+    tools: state.tools.length, sheets: state.sheets.length,
+    hardware: state.hardware.length, templates: state.templates.length,
+    jobs: state.jobs.length
+  };
+  return `
+  <div class="card" style="--d:0">
+    ${secHead('down', 'پشتیبانگیری (Export)', null)}
+    <p class="hint">تمام دادهها را در یک فایل JSON ذخیره کنید.</p>
+    <div class="row" style="margin-top:12px">
+      <button class="btn pri" data-act="export">${ico('down',15)} دانلود فایل پشتیبان</button>
+      <button class="btn" data-act="export-html">${ico('save',15)} ذخیره در خود فایل HTML</button>
+    </div>
+    <div class="hint" style="margin-top:10px">
+      شامل: ${fmt(totals.tools)} ابزار، ${fmt(totals.sheets)} ورق، ${fmt(totals.hardware)} یراق، ${fmt(totals.templates)} قالب، ${fmt(totals.jobs)} کار.
+    </div>
+  </div>
+
+  <div class="card" style="--d:1">
+    ${secHead('up', 'بازیابی از پشتیبان (Import)', null)}
+    <p class="hint">فایل را انتخاب کنید و در مرحله بعد ادغام یا جایگزینی کامل را انتخاب کنید.</p>
+    <div class="row" style="margin-top:12px">
+      <button class="btn pri" data-act="import">${ico('up',15)} انتخاب فایل پشتیبان</button>
+    </div>
+  </div>
+
+  <div class="card" style="--d:2">
+    ${secHead('target', 'داده نمونه / بازنشانی', null)}
+    <div class="row" style="margin-top:12px">
+      <button class="btn" data-act="demo">${ico('target',15)} بارگذاری داده نمونه</button>
+      <button class="btn dan" data-act="wipe">${ico('trash',15)} پاک کردن همه</button>
+    </div>
+  </div>
+
+  <div class="card" style="--d:3">
+    ${secHead('chart', 'آمار کلی', null)}
+    <div class="table-wrap"><table>
+      <tbody>
+        <tr><td>تعداد ابزار</td><td>${fmt(totals.tools)}</td></tr>
+        <tr><td>ردیف‌های ورق</td><td>${fmt(totals.sheets)}</td></tr>
+        <tr><td>اقلام یراق</td><td>${fmt(totals.hardware)}</td></tr>
+        <tr><td>قالب‌های محاسبه</td><td>${fmt(totals.templates)}</td></tr>
+        <tr><td>کارها (باز / کل)</td><td>${fmt(jobsOpen().length)} / ${fmt(totals.jobs)}</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card" style="--d:4">
+    ${secHead('phone', 'نصب روی گوشی (نسخه مستقل)', null)}
+    <p class="hint">با نصب، آیکون اختصاصی <b style="color:var(--txt)">decor sahand</b> روی صفحه اصلی قرار می‌گیرد، اپ مثل یک برنامه مستقل باز می‌شود و بدون اینترنت هم کار می‌کند.</p>
+    <div class="row" style="margin-top:12px">
+      <button class="btn pri" data-act="install-pwa">${ico('phone',15)} نصب اپلیکیشن</button>
+    </div>
+    <div class="hint" style="margin-top:10px">
+      در اندروید: همین دکمه یا منوی مرورگر ← «نصب برنامه».<br>
+      در آیفون: دکمه اشتراک‌گذاری مرورگر ← «افزودن به صفحه اصلی».
+    </div>
+  </div>
+  `;
+}
+
+function exportBackup(){
+  const data = {
+    _meta: { app: 'kargah-anbar', version: 8, exportDate: new Date().toISOString() },
+    tools: state.tools, sheets: state.sheets,
+    hardware: state.hardware, templates: state.templates, jobs: state.jobs
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const d = new Date();
+  const stamp = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}-${String(d.getMinutes()).padStart(2,'0')}`;
+  a.download = `anbar-backup-${stamp}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('فایل پشتیبان دانلود شد', 'ok');
+}
+
+function exportHTML(){
+  const data = {
+    tools: state.tools, sheets: state.sheets,
+    hardware: state.hardware, templates: state.templates, jobs: state.jobs
+  };
+  // Read the current HTML file content
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', window.location.href, false); // synchronous to get current page
+  xhr.send();
+  if (xhr.status !== 200){
+    toast('خطا در خواندن فایل', 'dan');
+    return;
+  }
+  let html = xhr.responseText;
+  // Find and replace the state initialization
+  const stateMatch = html.match(/const KEY = '[^']+';\nconst THEME_KEY = '[^']+';/);
+  if (!stateMatch){
+    toast('خطا در پردازش فایل', 'dan');
+    return;
+  }
+  const newStateInit = `const KEY = '${localStorage.key || 'kargah_anbar_v8'}';
+const THEME_KEY = 'kargah_theme';
+// Data loaded from embedded backup`;
+  // Replace the load() call with inline data injection
+  const loadData = `load();\nrender();`;
+  const injectedData = `state.tools = ${JSON.stringify(data.tools)};\nstate.sheets = ${JSON.stringify(data.sheets)};\nstate.hardware = ${JSON.stringify(data.hardware)};\nstate.templates = ${JSON.stringify(data.templates)};\nstate.jobs = ${JSON.stringify(data.jobs)};\nsave();\nrender();`;
+  html = html.replace(loadData, injectedData);
+  // Write back to same file (only works if served from a writable location)
+  const blob = new Blob([html], {type: 'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const d = new Date();
+  const stamp = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  a.download = `anbar-${stamp}.html`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('فایل HTML با داده‌ها دانلود شد', 'ok');
+}
+
+document.getElementById('fileIn').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try{
+      const data = JSON.parse(r.result);
+      if (!data || typeof data !== 'object') throw new Error('invalid');
+      openImportModal(data, f.name);
+    }catch(err){ toast('فایل نامعتبر است', 'dan'); }
+  };
+  r.readAsText(f);
+  e.target.value = '';
+});
+
+function openImportModal(data, fileName){
+  const stats = {
+    tools: (data.tools||[]).length, sheets: (data.sheets||[]).length,
+    hardware: (data.hardware||[]).length, templates: (data.templates||[]).length,
+    jobs: (data.jobs||[]).length
+  };
+  const total = stats.tools + stats.sheets + stats.hardware + stats.templates + stats.jobs;
+  state.pendingImport = data;
+  state.importMode = 'merge';
+
+  setModal('بازیابی از فایل پشتیبان', 'up', `
+    <div class="hint" style="padding:10px 12px;background:var(--card2);border:1px solid var(--line);border-radius:10px">
+      <b style="color:var(--txt)">${esc(fileName || 'backup.json')}</b>
+      <div style="margin-top:4px">
+        ${fmt(stats.tools)} ابزار • ${fmt(stats.sheets)} ورق • ${fmt(stats.hardware)} یراق • ${fmt(stats.templates)} قالب • ${fmt(stats.jobs)} کار
+        <br>مجموع: ${fmt(total)} رکورد
+      </div>
+    </div>
+
+    <div class="sec-title" style="margin-top:16px">حالت بازیابی:</div>
+
+    <label class="imp-option selected" data-imp-mode="merge">
+      <input type="radio" name="impMode" value="merge" checked>
+      <div class="imp-option-body">
+        <b>${ico('merge',15)} ادغام با داده‌های فعلی</b>
+        <div class="hint">رکوردها اضافه می‌شوند. رکوردهای با شناسه تکراری به‌روزرسانی می‌شوند.</div>
+      </div>
+    </label>
+
+    <label class="imp-option" data-imp-mode="replace">
+      <input type="radio" name="impMode" value="replace">
+      <div class="imp-option-body">
+        <b>${ico('replace',15)} جایگزینی کامل</b>
+        <div class="hint" style="color:var(--dan-fg)">هشدار: تمام داده‌های فعلی پاک و با فایل جایگزین می‌شوند.</div>
+      </div>
+    </label>
+  `, `
+    <button class="btn pri" data-modal="do-import">${ico('check',15)} اعمال</button>
+    <button class="btn" data-modal="close">انصراف</button>
+  `);
+}
+
+function doImport(){
+  const data = state.pendingImport;
+  if (!data){ closeModal(); return; }
+  if (state.importMode === 'replace'){
+    if (!confirm('تمام داده‌های فعلی پاک و جایگزین می‌شوند. مطمئن هستید؟')) return;
+    state.tools = Array.isArray(data.tools) ? data.tools : [];
+    state.sheets = Array.isArray(data.sheets) ? data.sheets : [];
+    state.hardware = Array.isArray(data.hardware) ? data.hardware : [];
+    state.templates = Array.isArray(data.templates) ? data.templates : [];
+    state.jobs = Array.isArray(data.jobs) ? data.jobs : [];
+    save(); closeModal(); render();
+    toast('بازیابی کامل انجام شد', 'ok');
+    return;
+  }
+  const m = (cur, inc) => mergeById(cur, Array.isArray(inc) ? inc : []);
+  const before = state.tools.length + state.sheets.length + state.hardware.length + state.templates.length + state.jobs.length;
+  state.tools = m(state.tools, data.tools);
+  state.sheets = m(state.sheets, data.sheets);
+  state.hardware = m(state.hardware, data.hardware);
+  state.templates = m(state.templates, data.templates);
+  state.jobs = m(state.jobs, data.jobs);
+  const after = state.tools.length + state.sheets.length + state.hardware.length + state.templates.length + state.jobs.length;
+  save(); closeModal(); render();
+  toast(`ادغام انجام شد (+${fmt(after - before)} رکورد جدید)`, 'ok');
+}
+
+function mergeById(current, incoming){
+  const map = new Map();
+  current.forEach(x => { if (x && x.id) map.set(x.id, x); });
+  incoming.forEach(x => {
+    if (!x || typeof x !== 'object') return;
+    if (!x.id) x.id = uid();
+    map.set(x.id, x);
+  });
+  return Array.from(map.values());
+}
+
+/* =========================================================
+   Events
+========================================================= */
+document.getElementById('view').addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  handleAction(el.dataset.act, el.dataset);
+});
+
+document.getElementById('view').addEventListener('input', e => {
+  const el = e.target;
+  const k = el.dataset.input;
+  if (k){
+    state.ui[k] = el.value;
+    const pos = el.selectionStart;
+    render();
+    const again = document.querySelector(`[data-input="${k}"]`);
+    if (again){ again.focus(); try{ again.setSelectionRange(pos,pos); }catch(_){} }
+    return;
+  }
+  if (el.dataset.tplDisc){
+    const t = templateOf(el.dataset.tplDisc);
+    if (t){ t.discountPercent = num(el.value); save(); updateInvSummary(t); }
+    return;
+  }
+  if (el.dataset.tplTax){
+    const t = templateOf(el.dataset.tplTax);
+    if (t){ t.taxPercent = num(el.value); save(); updateInvSummary(t); }
+    return;
+  }
+});
+
+document.getElementById('view').addEventListener('change', e => {
+  const el = e.target;
+
+  if (el.classList.contains('return-cb')){
+    const jid = el.dataset.job, iid = el.dataset.item;
+    const j = jobOf(jid); if (!j) return;
+    const it = j.items.find(x => x.id === iid); if (!it) return;
+    if (el.checked){
+      if (!it.returned){ it.returned = true; it.inAt = faNow(); }
+    } else {
+      if (it.returned){ it.returned = false; delete it.inAt; }
+    }
+    save();
+    const row = el.closest('.return-row');
+    if (row){
+      row.classList.toggle('returned', it.returned);
+      row.querySelector('.return-qty').innerHTML = it.returned
+        ? '<span class="badge ok">تحویل شد</span>'
+        : '<span class="badge warn">در امانت</span>';
+    }
+    updateNavBadge();
+    const total = (j.items||[]).length;
+    const done  = total - jobPendingCount(j);
+    const prog  = total ? Math.round((done/total)*100) : 0;
+    document.querySelectorAll('.job-detail-progress').forEach(el2 => el2.style.width = prog + '%');
+    return;
+  }
+
+  if (el.dataset.tplName){
+    const t = templateOf(el.dataset.tplName);
+    if (t){ t.name = el.value.trim() || t.name; save(); }
+    return;
+  }
+  if (el.dataset.tplNotes){
+    const t = templateOf(el.dataset.tplNotes);
+    if (t){ t.notes = el.value; save(); }
+    return;
+  }
+});
+
+document.getElementById('view').addEventListener('submit', e => {
+  const f = e.target.closest('form[data-form]');
+  if (!f) return;
+  e.preventDefault();
+  handleForm(f.dataset.form, f);
+});
+
+document.getElementById('modal').addEventListener('click', e => {
+  const cc = e.target.closest('.cat-card');
+  if (cc){
+    const r = cc.getBoundingClientRect();
+    cc.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    cc.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  }
+
+  const impOpt = e.target.closest('.imp-option');
+  if (impOpt){
+    document.querySelectorAll('#modal .imp-option').forEach(o => o.classList.remove('selected'));
+    impOpt.classList.add('selected');
+    const radio = impOpt.querySelector('input[type=radio]');
+    if (radio) radio.checked = true;
+    state.importMode = impOpt.dataset.impMode || 'merge';
+    return;
+  }
+
+  const wBtn = e.target.closest('[data-w]');
+  if (wBtn){
+    const a = wBtn.dataset.w;
+    const w = state.wizard;
+    if (!w) return;
+    if (a === 'cancel') return closeModal();
+    if (a === 'back'){ w.step = Math.max(1, w.step - 1); renderWizard(); return; }
+    if (a === 'next'){
+      if (!w.category){ toast('دسته را انتخاب کنید', 'warn'); return; }
+      if (!w.sub){ toast('زیردسته را انتخاب کنید', 'warn'); return; }
+      w.step = 3; renderWizard(); return;
+    }
+    if (a === 'pick-cat'){ w.category = wBtn.dataset.val; w.step = 2; renderWizard(); return; }
+    if (a === 'new-cat'){
+      document.getElementById('newCatBox').style.display = 'block';
+      document.getElementById('newCatInput').focus(); return;
+    }
+    if (a === 'confirm-new-cat'){
+      const v = document.getElementById('newCatInput').value.trim();
+      if (!v){ toast('نام دسته را وارد کنید', 'warn'); return; }
+      w.category = v; w.step = 2; renderWizard(); return;
+    }
+    if (a === 'pick-sub'){ w.sub = wBtn.dataset.val; w.step = 3; renderWizard(); return; }
+    if (a === 'new-sub'){
+      document.getElementById('newSubBox').style.display = 'block';
+      document.getElementById('newSubInput').focus(); return;
+    }
+    if (a === 'confirm-new-sub'){
+      const v = document.getElementById('newSubInput').value.trim();
+      if (!v){ toast('نام زیردسته را وارد کنید', 'warn'); return; }
+      w.sub = v; w.step = 3; renderWizard(); return;
+    }
+    if (a === 'save') return saveWizard();
+  }
+
+  const mBtn = e.target.closest('[data-modal]');
+  if (mBtn){
+    const a = mBtn.dataset.modal;
+    if (a === 'close') return closeModal();
+    if (a === 'save-tool') return doSaveTool(mBtn.dataset.id);
+    if (a === 'save-item') return saveItem(mBtn.dataset.tpl, mBtn.dataset.item);
+    if (a === 'confirm-start') return confirmStartJob();
+    if (a === 'do-import') return doImport();
+  }
+});
+
+document.getElementById('modal').addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const id = e.target.id;
+  if (id === 'newCatInput'){ e.preventDefault(); document.querySelector('[data-w="confirm-new-cat"]')?.click(); }
+  if (id === 'newSubInput'){ e.preventDefault(); document.querySelector('[data-w="confirm-new-sub"]')?.click(); }
+});
+
+/* =========================================================
+   Actions
+========================================================= */
+function handleAction(act, d){
+  switch(act){
+    /* Dashboard nav */
+    case 'nav-tools':     state.ui.tab='tools'; state.ui.toolCat=null; closeDrawer(); render(); break;
+    case 'nav-jobs':      state.ui.tab='jobs';  state.ui.openJob=null; closeDrawer(); render(); break;
+    case 'nav-sheets':    state.ui.tab='sheets'; state.ui.sheetsCat=null; state.ui.sheetsSub=null; closeDrawer(); render(); break;
+    case 'nav-hardware':  state.ui.tab='hardware'; state.ui.hardwareCat=null; state.ui.hardwareSub=null; closeDrawer(); render(); break;
+    case 'nav-calc':      state.ui.tab='calc';   state.ui.openTemplate=null; closeDrawer(); render(); break;
+
+    /* Tools */
+    case 'pick-tool-cat': state.ui.toolCat = d.val; render(); break;
+    case 'back-tools': state.ui.toolCat = null; render(); break;
+    case 'tool-edit': openToolForm(d.id); break;
+    case 'new-tool-in-cat': openToolForm(null, d.cat); break;
+
+    /* Sheets */
+    case 'pick-sheets-cat': state.ui.sheetsCat = d.val; state.ui.sheetsSub = null; render(); break;
+    case 'back-sheets-cat': state.ui.sheetsCat = null; state.ui.sheetsSub = null; render(); break;
+    case 'pick-sheets-sub': state.ui.sheetsSub = d.val; render(); break;
+    case 'back-sheets-sub': state.ui.sheetsSub = null; render(); break;
+    case 'sheet-edit': openWizard('sheet', d.id); break;
+    case 'new-sheet-in-sub': openWizard('sheet', null, d.cat, d.sub); break;
+    case 'toggle-sheet-search': state.ui.showSheetSearch = !state.ui.showSheetSearch; render(); break;
+    case 'clear-sheet-search': state.ui.sq = null; render(); break;
+
+    /* Hardware */
+    case 'pick-hardware-cat': state.ui.hardwareCat = d.val; state.ui.hardwareSub = null; render(); break;
+    case 'back-hardware-cat': state.ui.hardwareCat = null; state.ui.hardwareSub = null; render(); break;
+    case 'pick-hardware-sub': state.ui.hardwareSub = d.val; render(); break;
+    case 'back-hardware-sub': state.ui.hardwareSub = null; render(); break;
+    case 'hw-edit': openWizard('hardware', d.id); break;
+    case 'new-hw-in-sub': openWizard('hardware', null, d.cat, d.sub); break;
+
+    /* New cat / sub */
+    case 'new-cat': createNewCategory(d.type); break;
+    case 'new-sub': createNewSub(d.type); break;
+    case 'rename-cat': renameCategory(d.type, d.val); break;
+    case 'del-cat': deleteCategory(d.type, d.val); break;
+    case 'rename-sub': renameSub(d.type, d.cat, d.val); break;
+    case 'del-sub': deleteSub(d.type, d.cat, d.val); break;
+
+    /* Jobs */
+    case 'start-job': openStartJobModal(); break;
+    case 'open-job': state.ui.openJob = d.id; render(); break;
+    case 'close-job-view': state.ui.openJob = null; render(); break;
+    case 'job-filter': state.ui.jobFilter = d.val; render(); break;
+    case 'return-all': {
+      const j = jobOf(d.id); if (!j) break;
+      const pend = (j.items||[]).filter(i => !i.returned);
+      if (!pend.length) break;
+      if (!confirm(`همه ${pend.length} ابزار باقیمانده تحویل داده شده‌اند؟`)) break;
+      pend.forEach(it => { it.returned = true; it.inAt = faNow(); });
+      save(); render(); toast('همه ابزارها تحویل ثبت شد', 'ok');
+      break;
+    }
+    case 'job-close': {
+      const j = jobOf(d.id); if (!j) break;
+      const pend = (j.items||[]).filter(i => !i.returned);
+      if (pend.length && !confirm(`هنوز ${pend.length} قلم ابزار تحویل نشده. باز هم بسته شود؟`)) break;
+      j.closed = true; save(); render(); toast('کار بسته شد', 'ok');
+      break;
+    }
+    case 'job-reopen': {
+      const j = jobOf(d.id); if (!j) break;
+      j.closed = false; save(); render(); toast('کار بازگشایی شد', 'ok');
+      break;
+    }
+
+    /* Templates */
+    case 'toggle-inv-theme': {
+      const t = templateOf(d.id); if (!t) break;
+      t.invTheme = t.invTheme === 'dark' ? 'light' : 'dark';
+      save(); render();
+      break;
+    }
+    case 'new-template': {
+      const nt = { id: uid(), name: 'قالب جدید', items: [], discountPercent: 0, taxPercent: 9, notes: '', invTheme: null };
+      assignInvoiceNumber(nt.id);
+      state.templates.unshift(nt);
+      save(); state.ui.openTemplate = nt.id; render();
+      toast('قالب جدید ایجاد شد', 'ok');
+      break;
+    }
+    case 'open-template': state.ui.openTemplate = d.id; render(); break;
+    case 'close-template': state.ui.openTemplate = null; render(); break;
+    case 'dup-template': {
+      const t = templateOf(d.id); if (!t) break;
+      const copy = JSON.parse(JSON.stringify(t));
+      copy.id = uid(); copy.name = t.name + ' (کپی)';
+      state.templates.unshift(copy);
+      save(); render(); toast('قالب کپی شد', 'ok');
+      break;
+    }
+    case 'add-item': openItemModal(d.tpl); break;
+    case 'edit-item': openItemModal(d.tpl, d.item); break;
+    case 'del-item': {
+      const t = templateOf(d.tpl); if (!t) break;
+      if (!confirm('حذف این قلم؟')) break;
+      t.items = (t.items||[]).filter(x => x.id !== d.item);
+      save(); render(); toast('قلم حذف شد', 'dan');
+      break;
+    }
+    case 'print-invoice': printInvoice(d.id); break;
+
+    case 'del': {
+      const names = { tool:'ابزار', sheet:'ورق', hardware:'یراق', template:'قالب', job:'کار' };
+      if (!confirm(`حذف این ${names[d.type]||'مورد'}؟`)) break;
+      if (d.type === 'tool')     state.tools     = state.tools.filter(x => x.id !== d.id);
+      if (d.type === 'sheet')    state.sheets    = state.sheets.filter(x => x.id !== d.id);
+      if (d.type === 'hardware') state.hardware  = state.hardware.filter(x => x.id !== d.id);
+      if (d.type === 'template'){
+        state.templates = state.templates.filter(x => x.id !== d.id);
+        if (state.ui.openTemplate === d.id) state.ui.openTemplate = null;
+      }
+      if (d.type === 'job'){
+        state.jobs = state.jobs.filter(x => x.id !== d.id);
+        if (state.ui.openJob === d.id) state.ui.openJob = null;
+      }
+      save(); render(); toast('حذف شد', 'dan');
+      break;
+    }
+
+    case 'export': exportBackup(); break;
+    case 'export-html': exportHTML(); break;
+    case 'install-pwa': installPwa(); break;
+    case 'import': document.getElementById('fileIn').click(); break;
+    case 'wipe':
+      if (confirm('همه داده‌ها پاک شوند؟')){
+        state.tools = []; state.sheets = []; state.hardware = [];
+        state.templates = []; state.jobs = [];
+        save(); render(); toast('همه داده‌ها پاک شدند', 'dan');
+      }
+      break;
+    case 'demo': loadDemo(); break;
+  }
+}
+
+function handleForm(name, f){
+  const fd = new FormData(f);
+  const g = k => (fd.get(k) || '').toString().trim();
+  if (name === 'sheet-search'){
+    state.ui.sq = { L: num(g('L')), W: num(g('W')), mode: g('mode'), tol: g('tol') };
+    render();
+  }
+}
+
+/* =========================================================
+   FAB
+========================================================= */
+document.getElementById('fab').onclick = () => {
+  const t = state.ui.tab;
+  if (t === 'tools' && state.ui.toolCat) openToolForm(null, state.ui.toolCat);
+  else if (t === 'jobs') openStartJobModal();
+  else if (t === 'sheets' && state.ui.sheetsCat && state.ui.sheetsSub)
+    openWizard('sheet', null, state.ui.sheetsCat, state.ui.sheetsSub);
+  else if (t === 'hardware' && state.ui.hardwareCat && state.ui.hardwareSub)
+    openWizard('hardware', null, state.ui.hardwareCat, state.ui.hardwareSub);
+  else if (t === 'calc'){
+    const nt = { id: uid(), name: 'قالب جدید', items: [], discountPercent: 0, taxPercent: 9, notes: '' };
+    state.templates.unshift(nt);
+    save(); state.ui.openTemplate = nt.id; render();
+    toast('قالب جدید ایجاد شد', 'ok');
+  }
+};
+
+/* =========================================================
+   Demo data
+========================================================= */
+function loadDemo(){
+  if (!confirm('داده‌های نمونه اضافه شوند؟ (داده‌های فعلی پاک می‌شوند)')) return;
+  state.tools = [
+    { id: uid(), name:'فرز انگشتی', category:'ابزار برقی', total:2, note:'ماکیتا' },
+    { id: uid(), name:'دریل شارژی', category:'ابزار برقی', total:3, note:'' },
+    { id: uid(), name:'متر نواری ۵ متری', category:'ابزار اندازه‌گیری', total:6, note:'' },
+    { id: uid(), name:'پرس لولا', category:'ابزار دستی', total:1, note:'' }
+  ];
+  state.sheets = [
+    { id: uid(), category:'MDF', sub:'روکش‌دار', width:183, length:244, qty:12, note:'سفید' },
+    { id: uid(), category:'MDF', sub:'خام',     width:183, length:244, qty:5,  note:'' },
+    { id: uid(), category:'نئوپان', sub:'ملامینه', width:183, length:244, qty:20, note:'گردویی' },
+    { id: uid(), category:'MDF', sub:'روکش‌دار', width:80, length:27, qty:10, note:'برش‌خورده' }
+  ];
+  state.hardware = [
+    { id: uid(), category:'پیچ', sub:'پیچ ام‌دی‌اف 4×16', unit:'pack', packSize:100, qty:8, note:'', title:'پیچ ام‌دی‌اف 4×16' },
+    { id: uid(), category:'پیچ', sub:'پیچ ام‌دی‌اف 4×30', unit:'pack', packSize:100, qty:3, note:'', title:'پیچ ام‌دی‌اف 4×30' },
+    { id: uid(), category:'لولا', sub:'گازور کلیپ‌آن', unit:'piece', packSize:0, qty:48, note:'کوتاه', title:'لولا گازور کوتاه' },
+    { id: uid(), category:'ریل', sub:'زیرکش ۴۵ سانتی', unit:'pack', packSize:2, qty:10, note:'', title:'ریل زیرکش ۴۵ سانتی' }
+  ];
+  state.templates = [{
+    id: uid(), name: 'کابینت آشپزخانه - نمونه',
+    items: [
+      { id: uid(), type:'ورق',  label:'ورق MDF روکش‌دار ۱۸۳×۲۴۴', qty: 3, unit:'تخته', unitPrice: 2400000 },
+      { id: uid(), type:'یراق', label:'لولا گازور کلیپ‌آن', qty: 16, unit:'عدد', unitPrice: 18000 },
+      { id: uid(), type:'یراق', label:'ریل زیرکش ۴۵ سانتی', qty: 6, unit:'جفت', unitPrice: 85000 },
+      { id: uid(), type:'خدمت', label:'برش ورق', qty: 1, unit:'سرویس', unitPrice: 350000 },
+      { id: uid(), type:'خدمت', label:'حمل و نصب', qty: 1, unit:'سرویس', unitPrice: 800000 }
+    ],
+    discountPercent: 0, taxPercent: 9, notes: ''
+  }];
+  const t1 = state.tools[0], t2 = state.tools[1];
+  state.jobs = [{
+    id: uid(), name: 'کابینت آشپزخانه - نمونه', date: faNow(),
+    items: [
+      { id: uid(), toolId: t1.id, qty: 1, returned: false, outAt: faNow() },
+      { id: uid(), toolId: t2.id, qty: 2, returned: true, outAt: faNow(), inAt: faNow() }
+    ],
+    closed: false
+  }];
+  save(); render(); toast('داده‌های نمونه بارگذاری شد', 'ok');
+}
+
+
+
+/* =========================================================
+   PWA — offline shell, install prompt, connectivity toasts
+========================================================= */
+let deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();               // keep our own button in charge
+  deferredInstallPrompt = e;
+});
+
+function installPwa(){
+  if (!deferredInstallPrompt){
+    toast('از منوی مرورگر گزینه «افزودن به صفحه اصلی» یا «نصب برنامه» را بزنید', 'info');
+    return;
+  }
+  deferredInstallPrompt.prompt();
+  deferredInstallPrompt.userChoice.then(() => { deferredInstallPrompt = null; }).catch(() => {});
+}
+
+window.addEventListener('offline', () => {
+  toast('آفلاین — تغییرات روی این دستگاه ذخیره و بعداً ارسال می‌شود', 'warn');
+});
+window.addEventListener('online', () => {
+  toast('اتصال برقرار شد — همگام‌سازی ادامه دارد', 'ok');
+});
+
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('Service worker registered:', reg.scope))
+      .catch(err => console.warn('Service worker failed:', err));
+  });
+}
+
+/* =========================================================
+   Init
+========================================================= */
+load();
+render();
+</script>
+</body>
+</html>

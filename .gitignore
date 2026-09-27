@@ -1,0 +1,6 @@
+# Infrastructure (account ids, D1 ids) stays out of the public repository —
+# the deployed site never needs it.
+worker/
+.wrangler/
+node_modules/
+.DS_Store

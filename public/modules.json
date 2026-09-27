@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "updated": "2026-09-27",
+  "modules": [
+    {
+      "id": "anbar",
+      "title": "انبار کارگاه",
+      "subtitle": "ابزار، ورق، فاکتور، امانت ابزار و شمارش موجودی",
+      "href": "anbar/",
+      "manifest": "anbar/manifest.webmanifest",
+      "icon": "anbar/icon-192.png",
+      "accent": "#d97706",
+      "scope": "anbar/"
+    },
+    {
+      "id": "fin",
+      "title": "مالی",
+      "subtitle": "چک، بدهی، دریافتی‌ها و هزینه‌ها",
+      "href": "fin/",
+      "manifest": "fin/manifest.webmanifest",
+      "icon": "fin/icon-192.png",
+      "accent": "#ff9900",
+      "scope": "fin/"
+    }
+  ]
+}
