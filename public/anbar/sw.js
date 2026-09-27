@@ -10,7 +10,8 @@ const SHELL = [
   './icon-512.png',
   './icon-maskable-512.png',
   './apple-touch-icon.png',
-  './favicon-32.png'
+  './favicon-32.png',
+  './lock.js'
 ];
 
 self.addEventListener('install', event => {

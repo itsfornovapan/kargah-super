@@ -16,7 +16,8 @@ const SHELL = [
   './icon-maskable-512.png',
   './favicon-16.png',
   './favicon-32.png',
-  './apple-touch-icon.png'
+  './apple-touch-icon.png',
+  './lock.js'
 ];
 
 const LIBS = [
