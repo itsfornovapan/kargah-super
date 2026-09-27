@@ -425,7 +425,7 @@ function JalaliDatePicker({value,onChange,placeholder}){
   return <div className="jdp-wrap" ref={ref}>
     <input type="text" readOnly className="form-input jdp-input" value={displayText} placeholder={placeholder||'انتخاب تاریخ'} onClick={()=>setOpen(!open)}/>
     {open&&<div className="jdp-popup">
-      <div className="jdp-nav"><button type="button" onClick={nextMonth}>{Icons.arrowLeft}</button><span>{monthNames[viewJM-1]} {viewJY}</span><button type="button" onClick={prevMonth}>{Icons.arrowRight}</button></div>
+      <div className="jdp-nav"><button type="button" onClick={nextMonth}>{Icons.arrowRight}</button><span>{monthNames[viewJM-1]} {viewJY}</span><button type="button" onClick={prevMonth}>{Icons.arrowLeft}</button></div>
       <div className="jdp-grid">
         {['ش','ی','د','س','چ','پ','ج'].map((d,i)=><div key={i} className="jdp-head">{d}</div>)}
         {days.map((d,i)=>{if(d===null)return <div key={'e'+i} className="jdp-cell empty"></div>;const isSelected=selectedJ&&selectedJ.jy===viewJY&&selectedJ.jm===viewJM&&selectedJ.jd===d;const isToday=d===t.jd&&viewJM===t.jm&&viewJY===t.jy;return <div key={d} className={'jdp-cell '+(isSelected?'selected ':'')+(isToday?'today':'')} onClick={()=>selectDay(d)}>{d}</div>;})}
@@ -614,7 +614,7 @@ function CashAllocationModal({data,setData,onSave,onClose}){
       <div className="alloc-summary-box"><div className="alloc-summary-label">باقیمانده</div><div className="alloc-summary-value" style={{color:overBudget?'var(--danger)':remaining>0?'var(--warning)':'var(--success)'}}>{formatMoney(Math.abs(remaining))}</div><div className="alloc-summary-words">{moneyWords(Math.abs(remaining),unit)}{overBudget?' (بیش از موجودی)':''}</div></div>
     </div>
     <div className="month-selector" style={{marginBottom:12,marginTop:0}}>
-      <button onClick={prevMonth} type="button">{Icons.arrowRight}</button><span>{monthNames[viewJM-1]} {viewJY}</span><button onClick={nextMonth} type="button">{Icons.arrowLeft}</button>
+      <button onClick={prevMonth} type="button">{Icons.arrowLeft}</button><span>{monthNames[viewJM-1]} {viewJY}</span><button onClick={nextMonth} type="button">{Icons.arrowRight}</button>
     </div>
     {overBudget&&<div className="alloc-note">⚠ جمع انتخاب از موجودی صندوق بیشتر است.</div>}
     {unpaidExpenses.length===0?<div className="empty-state" style={{padding:'30px 20px'}}><p>هزینه‌ی پرداخت‌نشده‌ای برای این ماه وجود ندارد</p></div>:
@@ -742,9 +742,9 @@ function Dashboard({data,setCurrentPage}){
   return <div>
     <div className="page-header"><h2>داشبورد</h2><p>نمای کلی وضعیت مالی — واحد: {getUnitLabel(unit)}</p></div>
     <div className="month-selector">
-      <button onClick={prevMonth} type="button">{Icons.arrowRight}</button>
+      <button onClick={prevMonth} type="button">{Icons.arrowLeft}</button>
       <span>{monthNames[viewJM-1]} {viewJY}</span>
-      <button onClick={nextMonth} type="button">{Icons.arrowLeft}</button>
+      <button onClick={nextMonth} type="button">{Icons.arrowRight}</button>
     </div>
     <div className="stats-grid">
       <div className="stat-card gold"><div className="stat-label">چک‌های {monthNames[viewJM-1]}</div><div className="stat-value" style={{color:'var(--accent)'}}>{formatMoney(monthChecksTotal)}</div><div className="stat-words">{moneyWords(monthChecksTotal,unit)}</div><div className="stat-sub"><span>{monthChecks.length} فقره</span>{monthChecksPending>0&&<span>{formatMoney(monthChecksPending)} منتظر</span>}</div></div>
@@ -1185,7 +1185,7 @@ function ShamsiCalendar({data}){
   };
   return <div className="card" style={{marginTop:20}}>
     <div className="card-header"><span className="card-title" style={{display:'flex',alignItems:'center',gap:8}}>{Icons.calendar} تقویم شمسی</span></div>
-    <div className="month-selector"><button onClick={prevMonth}>{Icons.arrowRight}</button><span>{monthNames[viewJM-1]} {viewJY}</span><button onClick={nextMonth}>{Icons.arrowLeft}</button></div>
+    <div className="month-selector"><button onClick={prevMonth}>{Icons.arrowLeft}</button><span>{monthNames[viewJM-1]} {viewJY}</span><button onClick={nextMonth}>{Icons.arrowRight}</button></div>
     <div className="calendar-grid">
       {['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه'].map(d=><div key={d} className="calendar-header-cell">{d}</div>)}
       {days.map((d,i)=>{
@@ -1248,7 +1248,7 @@ function ReportsPage({data}){
   },[viewJM,viewJY,data.expenses,data.allocations,unit]);
   return <div>
     <div className="page-header"><h2>گزارش و تقویم</h2><p>خلاصه مالی و تقویم شمسی ({getUnitLabel(unit)})</p></div>
-    <div className="month-selector"><button onClick={prevMonth}>{Icons.arrowRight}</button><span>{monthNames[viewJM-1]} {viewJY}</span><button onClick={nextMonth}>{Icons.arrowLeft}</button></div>
+    <div className="month-selector"><button onClick={prevMonth}>{Icons.arrowLeft}</button><span>{monthNames[viewJM-1]} {viewJY}</span><button onClick={nextMonth}>{Icons.arrowRight}</button></div>
     <div className="stats-grid cols-5">
       <div className="stat-card green"><div className="stat-label">دریافتی</div><div className="stat-value" style={{color:'var(--success)',fontSize:18}}>{formatMoney(income)}</div></div>
       <div className="stat-card teal"><div className="stat-label">منتقل شده</div><div className="stat-value" style={{color:'#14B8A6',fontSize:18}}>{formatMoney(transferred)}</div></div>

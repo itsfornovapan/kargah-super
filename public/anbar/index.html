@@ -476,7 +476,7 @@ button[data-decor-lock]{background:#222e44;border:1px solid #3A4A63;color:#8ea1b
 button[data-decor-lock]:hover{background:#2a3a54;color:#e8eef8;border-color:#FF9900}
 </style></head>
 <body>
-<!-- Decor Sahand lock screen -->
+<!-- Deco Sahand lock screen -->
 <script>window.DECOR_LOCK_API_BASE = 'https://kargah-anbar-api.itsfordecosahand.workers.dev';</script>
 <script>window.DECOR_LOCK_API_KEY  = 'wYb9XPNSAGPE7ZLEe98hypIfzo8cvZZfHWte6Ug6myGutboJ';</script>
 <script>window.DECOR_LOCK_PATH    = 'lock';</script>
@@ -619,6 +619,8 @@ document.getElementById('themeBtn').onclick = () => {
 ========================================================= */
 const state = {
   tools: [], sheets: [], hardware: [], templates: [], jobs: [],
+  tombstones: { tools: {}, sheets: {}, hardware: {}, templates: {}, jobs: {} },
+  tombstones: { tools: {}, sheets: {}, hardware: {}, templates: {}, jobs: {} },
   ui: {
     tab:'dash',
     toolCat:null,
@@ -632,7 +634,8 @@ const state = {
   importMode: 'merge'
 };
 
-const uid   = () => Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-3);
+const uid   = () => Math.random().toString(36).slice(2,9)
+const nowMs = () => Date.now() + Date.now().toString(36).slice(-3);
 const esc   = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num   = v => { const n = parseFloat(String(v ?? '').replace(/[^\d.\-]/g,'')); return isNaN(n) ? 0 : n; };
 const fmt   = n => new Intl.NumberFormat('fa-IR',{maximumFractionDigits:2}).format(num(n));
@@ -743,6 +746,47 @@ function mergeRows(prevIds, cloudRows, localRows, localWins){
     r && r.id && (localIds.has(r.id) ? !localWins : !synced.has(r.id)));
 
   return keepLocal.concat(takeCloud);
+/* Tombstone-aware merge for cross-device delete propagation */
+function mergeWithTombstones(prevTombs, cloudRows, cloudTombs, localRows, localTombs, localWins) {
+  const result = [], resultTombs = {};
+  const synced = new Set(Object.keys(prevTombs || {}));
+  const allIds = new Set([...(localRows||[]).map(r=>r&&r.id).filter(Boolean), ...(cloudRows||[]).map(r=>r&&r.id).filter(Boolean)]);
+  Object.keys(localTombs||{}).forEach(id => allIds.add(id));
+  Object.keys(cloudTombs||{}).forEach(id => allIds.add(id));
+  
+  allIds.forEach(id => {
+    const lr = (localRows||[]).find(r=>r&&r.id===id);
+    const cr = (cloudRows||[]).find(r=>r&&r.id===id);
+    const ldel = !!(localTombs&&localTombs[id]);
+    const cdel = !!(cloudTombs&&cloudTombs[id]);
+    
+    if (ldel && cdel) return;
+    if (cdel && !ldel) {
+      if (!localWins || !lr) { resultTombs[id] = cloudTombs[id]; return; }
+      if ((lr.updatedAt||0) >= (cr?cr.updatedAt:0)) { resultTombs[id] = cloudTombs[id]; return; }
+      result.push({...cr}); return;
+    }
+    if (ldel && !cdel) {
+      if (localWins) { resultTombs[id] = localTombs[id]; return; }
+      if (!cr || (lr&&(lr.updatedAt||0)>=(cr.updatedAt||0))) { resultTombs[id] = localTombs[id]; return; }
+      result.push({...cr}); return;
+    }
+    if (!lr && !cr) return;
+    if (!lr) { if (!synced.has(id)) result.push({...lr}); return; }
+    if (!cr) { result.push({...lr}); return; }
+    result.push((localWins||(lr.updatedAt||0)>=(cr.updatedAt||0)) ? {...lr} : {...cr});
+  });
+  
+  return [result, resultTombs];
+}
+
+function cleanOldTombstones(tombs, maxAgeMs=90*24*60*60*1000) {
+  const now = Date.now();
+  const r = {};
+  Object.keys(tombs).forEach(id => { if (now-tombs[id] < maxAgeMs) r[id] = tombs[id]; });
+  return r;
+}
+
 }
 
 let cloudPulled = false;    // true once the first pull finishes (success or not)
@@ -782,6 +826,7 @@ function readJson(res){
 function load() {
   try {
     loadFromLocalStorage();
+    if (!state.tombstones) state.tombstones = { tools: {}, sheets: {}, hardware: {}, templates: {}, jobs: {} };
     render();
     if (cloudOn()) syncFromCloud();
   } catch(e) {
@@ -794,7 +839,8 @@ function persistLocal(){
   try {
     localStorage.setItem(KEY, JSON.stringify({
       tools: state.tools, sheets: state.sheets,
-      hardware: state.hardware, templates: state.templates, jobs: state.jobs
+      hardware: state.hardware, templates: state.templates, jobs: state.jobs,
+      tombstones: state.tombstones || { tools: {}, sheets: {}, hardware: {}, templates: {}, jobs: {} }
     }));
   } catch(e) {}
 }
@@ -840,11 +886,29 @@ const cloudHasAny = byTable => CLOUD_TABLES.some(t => (byTable[t] || []).length 
 /* Fold freshly pulled rows into `state`. Returns true when something changed. */
 function adoptCloud(byTable, localWins){
   const prev = loadSyncedIds();
+  const prevTombs = state.tombstones || { tools: {}, sheets: {}, hardware: {}, templates: {}, jobs: {} };
+  const cloudTombs = byTable.tombstones || {};
   const snap = () => JSON.stringify([state.tools, state.sheets, state.hardware, state.templates, state.jobs]);
   const before = snap();
+  
   CLOUD_TABLES.forEach(t => {
-    state[t] = mergeRows(prev[t], byTable[t] || [], state[t] || [], localWins);
+    const [rows, tombs] = mergeWithTombstones(
+      prevTombs[t] || {}, 
+      byTable[t] || [], 
+      cloudTombs[t] || {},
+      state[t] || [], 
+      prevTombs[t] || {}, 
+      localWins
+    );
+    state[t] = rows;
+    state.tombstones[t] = tombs;
   });
+  
+  // Clean old tombstones
+  Object.keys(state.tombstones).forEach(t => {
+    state.tombstones[t] = cleanOldTombstones(state.tombstones[t]);
+  });
+  
   const changed = before !== snap();
   storeSyncedIds(idsBy(byTable));
   if (changed) { persistLocal(); render(); }
@@ -922,7 +986,8 @@ function syncToCloud(){
 
     const snapshot = {
       tools: state.tools, sheets: state.sheets, hardware: state.hardware,
-      templates: state.templates, jobs: state.jobs
+      templates: state.templates, jobs: state.jobs,
+      tombstones: state.tombstones || { tools: {}, sheets: {}, hardware: {}, templates: {}, jobs: {} }
     };
     return Promise.all(CLOUD_TABLES.map(t =>
       fetch(API_BASE + '/api/' + t, apiOptions({
@@ -2419,7 +2484,7 @@ function viewSettings(){
 
   <div class="card" style="--d:4">
     ${secHead('phone', 'نصب روی گوشی (نسخه مستقل)', null)}
-    <p class="hint">با نصب، آیکون اختصاصی <b style="color:var(--txt)">Decor Sahand</b> روی صفحه اصلی قرار می‌گیرد، اپ مثل یک برنامه مستقل باز می‌شود و بدون اینترنت هم کار می‌کند.</p>
+    <p class="hint">با نصب، آیکون اختصاصی <b style="color:var(--txt)">Deco Sahand</b> روی صفحه اصلی قرار می‌گیرد، اپ مثل یک برنامه مستقل باز می‌شود و بدون اینترنت هم کار می‌کند.</p>
     <div class="row" style="margin-top:12px">
       <button class="btn pri" data-act="install-pwa">${ico('phone',15)} نصب اپلیکیشن</button>
     </div>
@@ -2840,7 +2905,12 @@ function handleAction(act, d){
     case 'del': {
       const names = { tool:'ابزار', sheet:'ورق', hardware:'یراق', template:'قالب', job:'کار' };
       if (!confirm(`حذف این ${names[d.type]||'مورد'}؟`)) break;
-      if (d.type === 'tool')     state.tools     = state.tools.filter(x => x.id !== d.id);
+            // Tombstone soft-delete for cross-device sync
+      if (!state.tombstones) state.tombstones = {};
+      if (!state.tombstones[d.type]) state.tombstones[d.type] = {};
+      state.tombstones[d.type][d.id] = nowMs();
+      
+if (d.type === 'tool')     state.tools     = state.tools.filter(x => x.id !== d.id);
       if (d.type === 'sheet')    state.sheets    = state.sheets.filter(x => x.id !== d.id);
       if (d.type === 'hardware') state.hardware  = state.hardware.filter(x => x.id !== d.id);
       if (d.type === 'template'){

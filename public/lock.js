@@ -28,6 +28,7 @@
   var LOCK_ROW_ID = 'lock';
   if (typeof window !== 'undefined' && window.DECOR_LOCK_PATH) LOCK_PATH = window.DECOR_LOCK_PATH;
   var MIN_LEN = 4;
+  var DEFAULT_PASSWORD = '1234556';  // کاربر میتواند تغییر دهد
   var RECORD_VERSION = 2;  // bumped when storage model changes
 
   var root = null;
@@ -278,7 +279,7 @@
   function card(children) { var c = el('div', { 'class': 'lk-card' }); (children || []).forEach(function (n) { c.appendChild(n); }); return c; }
   function brand() {
     var b = el('div', { 'class': 'lk-brand' });
-    b.appendChild(el('b', { text: 'Decor' }));
+    b.appendChild(el('b', { text: 'Deco' }));
     b.appendChild(document.createTextNode(' '));
     b.appendChild(el('i', { text: 'Sahand' }));
     return b;
@@ -312,6 +313,7 @@
   function renderCreate() {
     var err = el('div', { 'class': 'lk-err' });
     var p1 = passwordField('lk-new', 'رمز عبور (حداقل ۴ نویسه)');
+    p1.querySelector('input').value = DEFAULT_PASSWORD;
     var p2 = passwordField('lk-new2', 'تکرار رمز عبور');
     var btn = el('button', { type: 'submit', 'class': 'lk-btn', text: 'ساختن رمز و ورود' });
     var form = el('form', { 'class': 'lk-form' }, [
