@@ -188,7 +188,92 @@
   }
 
   /* Fold cloud rows into the local document. Returns the new state. */
-  function mergeInto(cloudTables, localWins) {
+  
+/* ============================================================
+   Tombstone system for LWW delete propagation
+   ============================================================ */
+var TOMBSTONE_KEY = 'ktd_tombstones_v1';
+
+function loadTombstones() {
+    try { return JSON.parse(localStorage.getItem(TOMBSTONE_KEY) || '{}'); }
+    catch(e) { return {}; }
+}
+
+function storeTombstones(tombs) {
+    try { localStorage.setItem(TOMBSTONE_KEY, JSON.stringify(tombs)); }
+    catch(e) {}
+}
+
+function softDelete(table, id) {
+    var tombs = loadTombstones();
+    if (!tombs[table]) tombs[table] = {};
+    tombs[table][id] = Date.now();
+    storeTombstones(tombs);
+}
+
+function isSoftDeleted(table, id) {
+    var tombs = loadTombstones();
+    return !!(tombs[table] && tombs[table][id]);
+}
+
+function cleanOldTombstones(maxAgeMs) {
+    maxAgeMs = maxAgeMs || (90 * 24 * 60 * 60 * 1000);
+    var tombs = loadTombstones();
+    var now = Date.now();
+    var changed = false;
+    Object.keys(tombs).forEach(function(table) {
+        Object.keys(tombs[table]).forEach(function(id) {
+            if (now - tombs[table][id] > maxAgeMs) {
+                delete tombs[table][id];
+                changed = true;
+            }
+        });
+        if (Object.keys(tombs[table]).length === 0) delete tombs[table];
+    });
+    if (changed) storeTombstones(tombs);
+    return changed;
+}
+
+/* Merge with tombstone awareness for array tables */
+function mergeWithTombstones(prevTombs, cloudRows, cloudTombs, localRows, localTombs, localWins) {
+    var result = [], resultTombs = {};
+    var allIds = {};
+    (localRows || []).forEach(function(r) { if (r && r.id) allIds[r.id] = true; });
+    (cloudRows || []).forEach(function(r) { if (r && r.id) allIds[r.id] = true; });
+    Object.keys(localTombs || {}).forEach(function(id) { allIds[id] = true; });
+    Object.keys(cloudTombs || {}).forEach(function(id) { allIds[id] = true; });
+    
+    Object.keys(allIds).forEach(function(id) {
+        var localRow = (localRows || []).find(function(r) { return r && r.id === id; });
+        var cloudRow = (cloudRows || []).find(function(r) { return r && r.id === id; });
+        var isLocalDel = !!(localTombs && localTombs[id]);
+        var isCloudDel = !!(cloudTombs && cloudTombs[id]);
+        
+        if (isLocalDel && isCloudDel) return;
+        if (isCloudDel && !isLocalDel) {
+            if (!localWins || !localRow) { resultTombs[id] = cloudTombs[id]; return; }
+            if ((localRow.updatedAt || 0) >= (cloudRow ? cloudRow.updatedAt : 0)) {
+                resultTombs[id] = cloudTombs[id]; return;
+            }
+            result.push(assign({}, cloudRow)); return;
+        }
+        if (isLocalDel && !isCloudDel) {
+            if (localWins) { resultTombs[id] = localTombs[id]; return; }
+            if (!cloudRow || (localRow && (localRow.updatedAt || 0) >= (cloudRow.updatedAt || 0))) {
+                resultTombs[id] = localTombs[id]; return;
+            }
+            result.push(assign({}, cloudRow)); return;
+        }
+        if (!localRow && !cloudRow) return;
+        if (!localRow) { result.push(assign({}, cloudRow)); return; }
+        if (!cloudRow) { if (!synced.has(id)) result.push(assign({}, localRow)); return; }
+        result.push((localWins || (localRow.updatedAt || 0) >= (cloudRow.updatedAt || 0)) 
+            ? assign({}, localRow) : assign({}, cloudRow));
+    });
+    
+    return [result, resultTombs];
+}
+function mergeInto(cloudTables, localWins) {
     var info = readDoc();
     var doc = info.doc || defaultDoc();
     var localTables = toTables(doc);
