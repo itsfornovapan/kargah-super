@@ -472,8 +472,12 @@ const API_KEY = 'wYb9XPNSAGPE7ZLEe98hypIfzo8cvZZfHWte6Ug6myGutboJ';
 #cloud-sync-indicator.synced { background: #dcfce7; color: #166534; }
 #cloud-sync-indicator.error { background: #fee2e2; color: #991b1b; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+button[data-decor-lock]{background:#222e44;border:1px solid #3A4A63;color:#8ea1be;padding:10px 14px;border-radius:10px;font-family:inherit;font-size:13px;cursor:pointer;margin-top:12px;width:100%;text-align:right;display:flex;align-items:center;gap:10px;transition:background .18s,color .18s,border-color .18s}
+button[data-decor-lock]:hover{background:#2a3a54;color:#e8eef8;border-color:#FF9900}
 </style></head>
 <body>
+<!-- Decor Sahand lock screen -->
+<script src="./lock.js"></script>
 <!-- Cloud Sync Indicator -->
 <div id="cloud-sync-indicator">
   <span id="cloud-status-icon">☁️</span>
@@ -508,7 +512,10 @@ const API_KEY = 'wYb9XPNSAGPE7ZLEe98hypIfzo8cvZZfHWte6Ug6myGutboJ';
     <button data-tab="calc" style="--i:5"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="11" x2="8.01" y2="11"/><line x1="12" y1="11" x2="12.01" y2="11"/><line x1="16" y1="11" x2="16.01" y2="11"/><line x1="8" y1="15" x2="8.01" y2="15"/><line x1="12" y1="15" x2="12.01" y2="15"/><line x1="16" y1="15" x2="16.01" y2="15"/><line x1="8" y1="19" x2="16" y2="19"/></svg></span><span>محاسبه و فاکتور</span></button>
     <button data-tab="settings" style="--i:6"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span><span>پشتیبان‌گیری</span></button>
   
-    <a class="home" href="../" title="بازگشت به لانچر"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/></svg></span><span>همه برنامه‌ها</span></a>
+    <a class="home" href="../" title="بازگشت به لانچر">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/></svg></span><span>همه برنامهها</span>
+    </a>
+    <button data-decor-lock style="--i:7"><span class="ico">🔒</span><span>تغییر / قفل</span></button>
   </nav>
 </aside>
 
@@ -2402,7 +2409,7 @@ function viewSettings(){
 
   <div class="card" style="--d:4">
     ${secHead('phone', 'نصب روی گوشی (نسخه مستقل)', null)}
-    <p class="hint">با نصب، آیکون اختصاصی <b style="color:var(--txt)">decor sahand</b> روی صفحه اصلی قرار می‌گیرد، اپ مثل یک برنامه مستقل باز می‌شود و بدون اینترنت هم کار می‌کند.</p>
+    <p class="hint">با نصب، آیکون اختصاصی <b style="color:var(--txt)">Decor Sahand</b> روی صفحه اصلی قرار می‌گیرد، اپ مثل یک برنامه مستقل باز می‌شود و بدون اینترنت هم کار می‌کند.</p>
     <div class="row" style="margin-top:12px">
       <button class="btn pri" data-act="install-pwa">${ico('phone',15)} نصب اپلیکیشن</button>
     </div>

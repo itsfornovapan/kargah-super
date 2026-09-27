@@ -274,8 +274,10 @@ select.form-input option{background:var(--surface-2);color:#fff}
 </style>
 </head>
 <body>
+<div id="decor-lock"></div>
+<script src="./lock.js"></script>
 <style>
-  #bootSplash{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#111111;color:#A0A0A0;font-family:Vazirmatn,sans-serif;font-size:14px;z-index:99998}
+  #bootSplash{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#111111;color:#A0A0A0;font-family:Vazirmatn,sans-serif;font-size:14px;z-index:99999}
   #bootSplash .ring{width:34px;height:34px;border-radius:50%;border:3px solid #2A2A2A;border-top-color:#FF9900;animation:ktdspin .8s linear infinite}
   @keyframes ktdspin{to{transform:rotate(360deg)}}
   #ktdHome{position:fixed;bottom:18px;left:18px;z-index:99997;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#1A1A1A;border:1px solid #3A3A3A;color:#FF9900;box-shadow:0 8px 24px rgba(0,0,0,.5);transition:transform .15s,background .2s}
@@ -503,6 +505,14 @@ function SettingsModal({data,setData,onClose}){
       {[{k:'toman',t:'تومان',d:'مثال: ۷۵,۰۰۰,۰۰۰ تومان'},{k:'thousand',t:'هزار تومان',d:'مثال: ۷۵,۰۰۰ هزار تومان'},{k:'million',t:'میلیون تومان',d:'مثال: ۷۵ میلیون تومان'}].map(o=>
         <div key={o.k} className={'unit-option '+(unit===o.k?'selected':'')} onClick={()=>setUnit(o.k)}><div className="unit-option-radio"></div><div style={{flex:1}}><div className="unit-option-title">{o.t}</div><div className="unit-option-desc">{o.d}</div></div></div>)}
     </div>
+    <div style={{borderTop:'1px solid var(--border)',marginTop:18,paddingTop:16}}>
+      <div style={{fontSize:13,color:'var(--text-secondary)',marginBottom:12,lineHeight:1.7}}>🔒 <b style={{color:'#fff'}}>رمز عبور ورود</b> — همین رمز مشترک روی بخش انبار هم اثر دارد. از اینجا می‌توانید رمز را عوض کنید یا برنامه را دوباره قفل کنید.</div>
+      <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+        <button className="btn btn-outline" onClick={()=>window.DecorLock&&window.DecorLock.change()}>🔑 تغییر رمز عبور</button>
+        <button className="btn btn-outline" onClick={()=>window.DecorLock&&window.DecorLock.lock()}>🔒 قفل کردن برنامه</button>
+      </div>
+    </div>
+    /div>
     <div className="modal-actions"><button className="btn btn-accent" onClick={handleSave}>{Icons.check} ذخیره</button><button className="btn btn-outline" onClick={onClose}>انصراف</button></div>
   </Modal>;
 }
