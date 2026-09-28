@@ -434,6 +434,13 @@
   };
   
   // Auto-init if container exists
+  /* Remove legacy local password records so the hash never stays on device */
+  try {
+    ['decor_lock_v1', 'decor_lock_v2', 'decor_lock_v3'].forEach(function (k) {
+      localStorage.removeItem(k);
+    });
+  } catch (e) {}
+
   var container = document.getElementById('decor-lock-container');
   if (container) init(container);
 })();
