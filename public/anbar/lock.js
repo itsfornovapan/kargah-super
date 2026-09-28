@@ -329,17 +329,28 @@
             btn.disabled = false; btn.textContent = 'ساختن رمز و ورود';
             err.textContent = 'رمز قبلاً توسط دستگاه دیگری ساخته شده است';
             setTimeout(renderVerify, 1400);
-            return false;
+            return { state: 'exists' };
           }
           // No record on server — this device becomes ADMIN.
-          return saveLock([rec]);
+          return saveLock([rec]).then(function (saved) {
+            return { state: saved ? 'saved' : 'savefail', rec: rec, hash: h };
+          });
         });
-      }).then(function (ok) {
-        if (!ok) { return; }
-        record = { v: RECORD_VERSION, alg: alg, iter: iter, salt: salt, hash: h };
+      }).then(function (res) {
+        if (!res || res.state !== 'saved') {
+          if (res && res.state === 'savefail') {
+            btn.disabled = false; btn.textContent = 'ساختن رمز و ورود';
+            err.textContent = 'ارسال به سرور ناموفق بود — دوباره تلاش کنید';
+          }
+          return;
+        }
+        record = { v: RECORD_VERSION, alg: alg, iter: iter, salt: salt, hash: res.hash };
         markAdmin();
         finishUnlock();
-      }).catch(function () { btn.disabled = false; btn.textContent = 'ساختن رمز و ورود'; err.textContent = 'خطا در اتصال به سرور'; });
+      }).catch(function (ex) {
+        btn.disabled = false; btn.textContent = 'ساختن رمز و ورود';
+        err.textContent = 'خطا در اتصال به سرور' + (ex && ex.message ? ' (' + ex.message + ')' : '');
+      });
     });
     show(form);
     setTimeout(function () { var i = document.getElementById('lk-new'); if (i) i.focus(); }, 60);
@@ -478,10 +489,10 @@
         var alg = pickAlg(), salt = randomSalt();
         hashPassword(nw.value, salt, pickIter(alg), alg).then(function (h) {
           var newRec = { id: LOCK_ROW_ID, v: RECORD_VERSION, alg: alg, iter: pickIter(alg), salt: salt, hash: h, updated_at: new Date().toISOString() };
-          return saveLock([newRec]);
-        }).then(function (ok) {
-          if (!ok) { submit.disabled = false; err.textContent = 'ارسال به سرور ناموفق بود'; return; }
-          record = newRec;
+          return saveLock([newRec]).then(function (saved) { return { saved: saved, rec: newRec }; });
+        }).then(function (res) {
+          if (!res || !res.saved) { submit.disabled = false; err.textContent = 'ارسال به سرور ناموفق بود'; return; }
+          record = res.rec;
           // No local copy: the password hash lives only in the D1 database.
           submit.disabled = false;
           close();

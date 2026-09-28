@@ -273,8 +273,8 @@ function mergeWithTombstones(prevTombs, cloudRows, cloudTombs, localRows, localT
     
     return [result, resultTombs];
 }
-function mergeInto(cloudTables, localWins) {
-    var info = readDoc();
+function mergeInto(cloudTables, localWins, baseDoc) {
+    var info = baseDoc ? { doc: baseDoc } : readDoc();
     var doc = info.doc || defaultDoc();
     var localTables = toTables(doc);
     var snap = loadSnap();
@@ -484,7 +484,7 @@ function mergeInto(cloudTables, localWins) {
         // deletion.
         var reconciled = mergeInto(cloud, false);
         if (reconciled.changed) apply(reconciled);
-        var merged = mergeInto(cloud, true);
+        var merged = mergeInto(cloud, true, beforeDoc);
         out = merged.tables;
         apply(merged);
       } else {
