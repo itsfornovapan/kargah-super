@@ -35,14 +35,14 @@
   var PULL_TIMEOUT = 10000;
 
   var S = {
-    origin: 'storage',   // 'storage' (a real device copy) | 'seed' (embedded demo data)
-    pulled: false,       // at least one successful pull
-    queued: false,       // an edit is waiting for a successful pull
-    dirty: false,        // local state the server has not confirmed yet
-    busy: false,         // one sync at a time
+    origin: 'storage',
+    pulled: false,
+    queued: false,
+    dirty: false,
+    busy: false,
     editGen: 0,
-    lastSig: null,       // signature of the state the server is known to hold
-    mountSig: null,      // what React wrote straight after mounting
+    lastSig: null,
+    mountSig: null,
     armed: false,
     warned: false,
     mounted: false,
@@ -141,7 +141,6 @@
     return null;
   }
 
-  /* Mirrors the app's own loadData(): the newer of local vs embedded wins. */
   function readDoc() {
     var local = readRaw(), emb = embedded();
     if (!local && !emb) return { doc: null, origin: 'storage' };
@@ -165,10 +164,6 @@
 
   /* ---------------- merge (same rules as the warehouse app) ---------------- */
 
-  /* prevIds   ids the last successful pull saw on the server
-     cloudRows rows the server returns now
-     localRows rows this device holds
-     localWins our copy or theirs for rows both sides have            */
   function mergeRows(prevIds, cloudRows, localRows, localWins) {
     var inCloud = {};
     (cloudRows || []).forEach(function (r) { if (r && r.id) inCloud[r.id] = true; });
@@ -187,93 +182,56 @@
     return keepLocal.concat(takeCloud);
   }
 
-  /* Fold cloud rows into the local document. Returns the new state. */
-  
-/* ============================================================
-   Tombstone system for LWW delete propagation
-   ============================================================ */
-var TOMBSTONE_KEY = 'ktd_tombstones_v1';
+  /* ============================================================
+     Tombstone system for LWW delete propagation
+     ============================================================ */
+  var TOMBSTONE_KEY = 'ktd_tombstones_v1';
 
-function loadTombstones() {
+  function loadTombstones() {
     try { return JSON.parse(localStorage.getItem(TOMBSTONE_KEY) || '{}'); }
-    catch(e) { return {}; }
-}
+    catch (e) { return {}; }
+  }
 
-function storeTombstones(tombs) {
+  function storeTombstones(tombs) {
     try { localStorage.setItem(TOMBSTONE_KEY, JSON.stringify(tombs)); }
-    catch(e) {}
-}
+    catch (e) {}
+  }
 
-function softDelete(table, id) {
+  function softDelete(table, id) {
     var tombs = loadTombstones();
     if (!tombs[table]) tombs[table] = {};
     tombs[table][id] = Date.now();
     storeTombstones(tombs);
-}
+  }
 
-function isSoftDeleted(table, id) {
+  function isSoftDeleted(table, id) {
     var tombs = loadTombstones();
     return !!(tombs[table] && tombs[table][id]);
-}
+  }
 
-function cleanOldTombstones(maxAgeMs) {
+  function cleanOldTombstones(maxAgeMs) {
     maxAgeMs = maxAgeMs || (90 * 24 * 60 * 60 * 1000);
     var tombs = loadTombstones();
     var now = Date.now();
     var changed = false;
-    Object.keys(tombs).forEach(function(table) {
-        Object.keys(tombs[table]).forEach(function(id) {
-            if (now - tombs[table][id] > maxAgeMs) {
-                delete tombs[table][id];
-                changed = true;
-            }
-        });
-        if (Object.keys(tombs[table]).length === 0) delete tombs[table];
+    Object.keys(tombs).forEach(function (table) {
+      Object.keys(tombs[table]).forEach(function (id) {
+        if (now - tombs[table][id] > maxAgeMs) {
+          delete tombs[table][id];
+          changed = true;
+        }
+      });
+      if (Object.keys(tombs[table]).length === 0) delete tombs[table];
     });
     if (changed) storeTombstones(tombs);
     return changed;
-}
+  }
 
-/* Merge with tombstone awareness for array tables */
-function mergeWithTombstones(prevTombs, cloudRows, cloudTombs, localRows, localTombs, localWins) {
-    var result = [], resultTombs = {};
-    var allIds = {};
-    (localRows || []).forEach(function(r) { if (r && r.id) allIds[r.id] = true; });
-    (cloudRows || []).forEach(function(r) { if (r && r.id) allIds[r.id] = true; });
-    Object.keys(localTombs || {}).forEach(function(id) { allIds[id] = true; });
-    Object.keys(cloudTombs || {}).forEach(function(id) { allIds[id] = true; });
-    
-    Object.keys(allIds).forEach(function(id) {
-        var localRow = (localRows || []).find(function(r) { return r && r.id === id; });
-        var cloudRow = (cloudRows || []).find(function(r) { return r && r.id === id; });
-        var isLocalDel = !!(localTombs && localTombs[id]);
-        var isCloudDel = !!(cloudTombs && cloudTombs[id]);
-        
-        if (isLocalDel && isCloudDel) return;
-        if (isCloudDel && !isLocalDel) {
-            if (!localWins || !localRow) { resultTombs[id] = cloudTombs[id]; return; }
-            if ((localRow.updatedAt || 0) >= (cloudRow ? cloudRow.updatedAt : 0)) {
-                resultTombs[id] = cloudTombs[id]; return;
-            }
-            result.push(assign({}, cloudRow)); return;
-        }
-        if (isLocalDel && !isCloudDel) {
-            if (localWins) { resultTombs[id] = localTombs[id]; return; }
-            if (!cloudRow || (localRow && (localRow.updatedAt || 0) >= (cloudRow.updatedAt || 0))) {
-                resultTombs[id] = localTombs[id]; return;
-            }
-            result.push(assign({}, cloudRow)); return;
-        }
-        if (!localRow && !cloudRow) return;
-        if (!localRow) { result.push(assign({}, cloudRow)); return; }
-        if (!cloudRow) { if (!synced.has(id)) result.push(assign({}, localRow)); return; }
-        result.push((localWins || (localRow.updatedAt || 0) >= (cloudRow.updatedAt || 0)) 
-            ? assign({}, localRow) : assign({}, cloudRow));
-    });
-    
-    return [result, resultTombs];
-}
-function mergeInto(cloudTables, localWins, baseDoc) {
+  /* ============================================================
+     mergeInto — نسخه‌ی نهایی با پشتیبانی از baseDoc
+     baseDoc: عکس لحظه‌ای از State کاربر قبل از هر بازنویسی
+     ============================================================ */
+  function mergeInto(cloudTables, localWins, baseDoc) {
     var info = baseDoc ? { doc: baseDoc } : readDoc();
     var doc = info.doc || defaultDoc();
     var localTables = toTables(doc);
@@ -294,8 +252,6 @@ function mergeInto(cloudTables, localWins, baseDoc) {
     };
   }
 
-  /* Publish a reconciled document: to localStorage and, once React is up,
-     straight into its state so the screen follows the other device. */
   function apply(result) {
     if (!result || !result.changed) return false;
     writeDoc(result.doc);
@@ -327,7 +283,6 @@ function mergeInto(cloudTables, localWins, baseDoc) {
     return { ctrl: ctrl, clear: function () { clearTimeout(t); } };
   }
 
-  /* A failed or non-JSON answer must never be read as "empty database". */
   function pull(timeout) {
     var to = withTimeout(timeout || PULL_TIMEOUT);
     return fetch(API_BASE + '/api/dump', {
@@ -384,8 +339,6 @@ function mergeInto(cloudTables, localWins, baseDoc) {
 
   /* ---------------- reconcile ---------------- */
 
-  /* What to do with a cloud answer, in one place, so the first pull and every
-     later retry behave exactly the same way. */
   function reconcile(res) {
     S.pulled = true;
     var cloud = res.tables;
@@ -394,7 +347,6 @@ function mergeInto(cloudTables, localWins, baseDoc) {
     var localTables = toTables(doc);
 
     if (!cloudHasAny(cloud)) {
-      // Empty database: this device is the seed.
       storeSnap(emptyTables());
       S.lastSig = null;
       S.origin = 'storage';
@@ -403,8 +355,6 @@ function mergeInto(cloudTables, localWins, baseDoc) {
     }
 
     if (info.origin === 'seed') {
-      // The account already has data. Take it as-is and drop the demo rows,
-      // otherwise a brand-new phone would upload 15 old checks.
       var taken = fromTables(cloud);
       taken._savedAt = cloudSavedAt(cloud) || doc._savedAt || Date.now();
       storeSnap(cloud);
@@ -422,8 +372,6 @@ function mergeInto(cloudTables, localWins, baseDoc) {
     storeSnap(cloud);
     S.lastSig = sig(cloud);
     S.origin = 'storage';
-    // Anything we hold that the server does not (newer edits, rows created
-    // while offline) has to go up after this pull.
     if (sig(merged.tables) !== sig(cloud)) S.dirty = true;
   }
 
@@ -450,7 +398,7 @@ function mergeInto(cloudTables, localWins, baseDoc) {
     if (!cloudOn()) return;
     S.editGen++;
     S.dirty = true;
-    if (!S.pulled) {          // never push before we know what is up there
+    if (!S.pulled) {
       S.queued = true;
       retryLater(pullAgain);
       return;
@@ -477,13 +425,15 @@ function mergeInto(cloudTables, localWins, baseDoc) {
       var out;
 
       if (cloudHasAny(cloud)) {
-        // Always reconcile with server first (localWins=false) so that rows
-        // deleted by OTHER devices are dropped from our snapshot BEFORE we
-        // re-apply our local edits on top. Without this pre-pass, a device
-        // whose sync snapshot is empty or stale would resurrect every remote
-        // deletion.
+        // ============ عکس لحظه‌ای از State کاربر قبل از هر بازنویسی ============
+        var beforeInfo = readDoc();
+        var beforeDoc = beforeInfo.doc || defaultDoc();
+
+        // مرحله ۱: با سرور reconcile کن (localWins=false) تا حذف‌های ریموت پاک بشن
         var reconciled = mergeInto(cloud, false);
         if (reconciled.changed) apply(reconciled);
+
+        // مرحله ۲: از نسخه‌ی اصلی beforeDoc استفاده کن (نه از localStorage که تازه بازنویسی شده)
         var merged = mergeInto(cloud, true, beforeDoc);
         out = merged.tables;
         apply(merged);
@@ -500,11 +450,13 @@ function mergeInto(cloudTables, localWins, baseDoc) {
       })
         .then(readJson)
         .then(function () {
-          S.lastSig = sig(out);       // only now does the server really hold it
+          S.lastSig = sig(out);
           storeSnap(out);
           S.queued = false;
           if (S.editGen === gen) S.dirty = false; else retryLaterPush();
-          console.log('[ktd-sync] pushed');
+          console.log('[ktd-sync] pushed ✓', {
+            tables: Object.keys(out).reduce(function (a, k) { a[k] = (out[k] || []).length; return a; }, {})
+          });
         });
     })
       .catch(function (e) {
@@ -516,8 +468,6 @@ function mergeInto(cloudTables, localWins, baseDoc) {
 
   /* ---------------- hooks into the app ---------------- */
 
-  /* saveData() only ever writes STORAGE_KEY, so watching that one key is
-     enough to notice every edit the app makes. */
   function armHook() {
     if (Storage.prototype.__ktdHooked) return;
     var orig = Storage.prototype.setItem;
@@ -535,7 +485,6 @@ function mergeInto(cloudTables, localWins, baseDoc) {
     Storage.prototype.__ktdHooked = true;
   }
 
-  /* Called before React renders: pull, reconcile, then let the app boot. */
   function boot() {
     var work;
     if (!cloudOn()) { S.pulled = true; work = Promise.resolve(); }
@@ -551,15 +500,14 @@ function mergeInto(cloudTables, localWins, baseDoc) {
         })
         .catch(function (e) { console.warn('[ktd-sync] boot failed', e); });
     }
-    // The splash covers the app only while this runs; React paints after it.
     return work.then(hideSplash, hideSplash);
   }
 
-  /* Called right after React has rendered. */
   function start() {
     S.mounted = true;
     armHook();
     window.addEventListener('online', function () {
+      S.warned = false; // اجازه بده دوباره هشدار بده اگه بازم قطع شد
       if (!S.pulled) { pullAgain(); return; }
       if (S.dirty && !S.busy) queuePush();
     });
@@ -571,5 +519,14 @@ function mergeInto(cloudTables, localWins, baseDoc) {
     if (S.dirty) queuePush();
   }
 
-  window.KTD_SYNC = { boot: boot, start: start, state: function () { return S; }, push: push, pull: pullAgain };
+  window.KTD_SYNC = {
+    boot: boot,
+    start: start,
+    state: function () { return S; },
+    push: push,
+    pull: pullAgain,
+    softDelete: softDelete,
+    isSoftDeleted: isSoftDeleted,
+    tombstones: loadTombstones
+  };
 })();

@@ -746,6 +746,8 @@ function mergeRows(prevIds, cloudRows, localRows, localWins){
     r && r.id && (localIds.has(r.id) ? !localWins : !synced.has(r.id)));
 
   return keepLocal.concat(takeCloud);
+}
+
 /* Tombstone-aware merge for cross-device delete propagation */
 function mergeWithTombstones(prevTombs, cloudRows, cloudTombs, localRows, localTombs, localWins) {
   const result = [], resultTombs = {};
@@ -772,7 +774,7 @@ function mergeWithTombstones(prevTombs, cloudRows, cloudTombs, localRows, localT
       result.push({...cr}); return;
     }
     if (!lr && !cr) return;
-    if (!lr) { if (!synced.has(id)) result.push({...lr}); return; }
+    if (!lr) { if (!synced.has(id)) result.push({...cr}); return; }
     if (!cr) { result.push({...lr}); return; }
     result.push((localWins||(lr.updatedAt||0)>=(cr.updatedAt||0)) ? {...lr} : {...cr});
   });
@@ -785,8 +787,6 @@ function cleanOldTombstones(tombs, maxAgeMs=90*24*60*60*1000) {
   const r = {};
   Object.keys(tombs).forEach(id => { if (now-tombs[id] < maxAgeMs) r[id] = tombs[id]; });
   return r;
-}
-
 }
 
 let cloudPulled = false;    // true once the first pull finishes (success or not)
