@@ -702,7 +702,8 @@ function save() {
   try {
     localStorage.setItem(KEY, JSON.stringify({
       tools: state.tools, sheets: state.sheets,
-      hardware: state.hardware, templates: state.templates, jobs: state.jobs
+      hardware: state.hardware, templates: state.templates, jobs: state.jobs,
+      tombstones: state.tombstones || { tools: {}, sheets: {}, hardware: {}, templates: {}, jobs: {} }
     }));
     queueSyncToCloud();
   } catch(e) { console.warn(e); }
@@ -749,9 +750,9 @@ function mergeRows(prevIds, cloudRows, localRows, localWins){
 }
 
 /* Tombstone-aware merge for cross-device delete propagation */
-function mergeWithTombstones(prevTombs, cloudRows, cloudTombs, localRows, localTombs, localWins) {
+function mergeWithTombstones(prevTombs, cloudRows, cloudTombs, localRows, localTombs, localWins, prevIds) {
   const result = [], resultTombs = {};
-  const synced = new Set(Object.keys(prevTombs || {}));
+  const synced = new Set(prevIds || []);
   const allIds = new Set([...(localRows||[]).map(r=>r&&r.id).filter(Boolean), ...(cloudRows||[]).map(r=>r&&r.id).filter(Boolean)]);
   Object.keys(localTombs||{}).forEach(id => allIds.add(id));
   Object.keys(cloudTombs||{}).forEach(id => allIds.add(id));
@@ -770,12 +771,13 @@ function mergeWithTombstones(prevTombs, cloudRows, cloudTombs, localRows, localT
     }
     if (ldel && !cdel) {
       if (localWins) { resultTombs[id] = localTombs[id]; return; }
-      if (!cr || (lr&&(lr.updatedAt||0)>=(cr.updatedAt||0))) { resultTombs[id] = localTombs[id]; return; }
+      // Stay deleted while the cloud copy predates our delete moment.
+      if (!cr || (cr.updatedAt||0) <= (localTombs[id]||0)) { resultTombs[id] = localTombs[id]; return; }
       result.push({...cr}); return;
     }
     if (!lr && !cr) return;
     if (!lr) { if (!synced.has(id)) result.push({...cr}); return; }
-    if (!cr) { result.push({...lr}); return; }
+    if (!cr) { if (!synced.has(id)) result.push({...lr}); return; }
     result.push((localWins||(lr.updatedAt||0)>=(cr.updatedAt||0)) ? {...lr} : {...cr});
   });
   
@@ -898,7 +900,8 @@ function adoptCloud(byTable, localWins){
       cloudTombs[t] || {},
       state[t] || [], 
       prevTombs[t] || {}, 
-      localWins
+      localWins,
+      prev[t] || []
     );
     state[t] = rows;
     state.tombstones[t] = tombs;
@@ -1021,6 +1024,7 @@ function loadFromLocalStorage() {
     state.hardware  = d.hardware  || [];
     state.templates = d.templates || [];
     state.jobs      = d.jobs      || [];
+    state.tombstones = d.tombstones || { tools: {}, sheets: {}, hardware: {}, templates: {}, jobs: {} };
   } catch(e) { console.warn(e); }
 }
 

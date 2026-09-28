@@ -1,6 +1,6 @@
 /* Service worker: keeps the app shell available offline.
    Data itself lives in localStorage, so the app keeps working with no network. */
-const VERSION = 'kargah-anbar-shell-v3';
+const VERSION = 'kargah-anbar-shell-v4';
 const SHELL = [
   './',
   './index.html',
