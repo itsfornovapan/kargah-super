@@ -3,7 +3,7 @@
    so the app opens with no network at all, network-first for our own HTML.
    API calls go to another origin and are never touched: only successful HTTP
    responses are cached here, so no account data is ever written to the cache. */
-const CACHE = 'decor-fin-v3';
+const CACHE = 'decor-fin-v4';
 
 const SHELL = [
   './',

@@ -443,6 +443,35 @@
         storeSnap(emptyTables());
       }
 
+      // Skip the write entirely when the merged result equals what the server
+      // just returned — saves D1 row-write quota (retries/unchanged cycles).
+      // The client's settings table only carries id 'main'; login rows (u_*)
+      // are invisible to it and must not take part in the comparison.
+      var stable = function (t, isOut) {
+        var o = {};
+        Object.keys(t || {}).forEach(function (k) {
+          if (k === 'meta') return;
+          var rows = (t[k] || []).slice();
+          if (isOut && k === 'settings') rows = rows.filter(function (r) { return r && r.id === 'main'; });
+          if (!isOut && k === 'settings') rows = rows.filter(function (r) { return r && r.id === 'main'; });
+          o[k] = rows.sort(function (a, b) {
+            var x = String(a && a.id), y = String(b && b.id);
+            return x < y ? -1 : x > y ? 1 : 0;
+          });
+        });
+        return o;
+      };
+      var outKeys = Object.keys(stable(out, true)).sort().join(',');
+      var cloudKeys = Object.keys(stable(cloud, false)).sort().join(',');
+      if (cloud && outKeys === cloudKeys && sig(stable(out, true)) === sig(stable(cloud, false))) {
+        S.lastSig = sig(out);
+        storeSnap(out);
+        S.queued = false;
+        if (S.editGen === gen) S.dirty = false; else retryLaterPush();
+        console.log('[ktd-sync] unchanged — write skipped');
+        return Promise.resolve();
+      }
+
       out.meta = [{ id: 'main', savedAt: Date.now() }];
 
       return fetch(API_BASE + '/api/dump', {

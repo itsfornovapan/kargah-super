@@ -994,7 +994,21 @@ function syncToCloud(){
       templates: state.templates, jobs: state.jobs,
       tombstones: state.tombstones || { tools: {}, sheets: {}, hardware: {}, templates: {}, jobs: {} }
     };
-    return Promise.all(CLOUD_TABLES.map(t =>
+    // Only PUT tables that actually differ from what the server just returned:
+    // a normal edit touches one table, so this keeps D1 row-writes proportional
+    // to real changes instead of rewriting all five tables on every keystroke.
+    const byId = rows => (rows || []).slice().sort((a, b) =>
+      String(a && a.id) < String(b && b.id) ? -1 : String(a && a.id) > String(b && b.id) ? 1 : 0);
+    const dirtyTables = CLOUD_TABLES.filter(t =>
+      JSON.stringify(byId(snapshot[t])) !== JSON.stringify(byId(res.byTable[t])));
+    if (!dirtyTables.length) {
+      storeSyncedIds(idsBy(snapshot));
+      cloudPushQueued = false;
+      if (editGen === gen) cloudDirty = false; else retryLater(syncToCloud);
+      console.log('Cloud sync OK (server already up to date)');
+      return;
+    }
+    return Promise.all(dirtyTables.map(t =>
       fetch(API_BASE + '/api/' + t, apiOptions({
         method: 'PUT',
         body: JSON.stringify(snapshot[t])

@@ -41,8 +41,11 @@
 
   var root = null;
   var users = [];          // [{id:'u_name', alg, iter, salt, hash, updated_at}]
+  var legacyRec = null;    // legacy id:'lock' row — bridges admin until u_admin exists
   var currentUser = null;  // username
   var unlocked = false;
+  var SERVER_MSG = '';
+  var QUOTA_MSG = 'سرور موقتاً محدود است (سهمیه روزانه نوشتن). کمی بعد دوباره تلاش کنید.';
 
   /* ---------- session (username only — role is derived) ---------- */
 
@@ -59,7 +62,20 @@
     if (!name) return null;
     var want = userId(String(name).trim());
     for (var i = 0; i < users.length; i++) if (users[i] && users[i].id === want) return users[i];
+    // the legacy single-password row acts as the admin account until a real
+    // u_admin row has been written (server seed may be temporarily blocked)
+    if (want === userId(ADMIN_NAME) && legacyRec && legacyRec.hash) return legacyRec;
     return null;
+  }
+  function hasRealAdmin() {
+    for (var i = 0; i < users.length; i++) if (users[i] && users[i].id === userId(ADMIN_NAME)) return true;
+    return false;
+  }
+  function adoptRows(rows) {
+    legacyRec = null;
+    for (var i = 0; i < rows.length; i++) if (rows[i] && rows[i].id === 'lock') legacyRec = rows[i];
+    users = rows.filter(function (r) { return r && r.id && r.id !== 'lock'; });
+    return users;
   }
 
   /* ---------- crypto helpers ---------- */
@@ -196,7 +212,18 @@
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'X-API-Key': key },
       body: JSON.stringify(rec)
-    }).then(function (r) { return r.ok; }).catch(function () { return false; });
+    }).then(function (r) {
+      if (r.ok) { SERVER_MSG = ''; return true; }
+      return r.text().then(function (t) {
+        SERVER_MSG = (t && t.indexOf('exceeded') !== -1)
+          ? QUOTA_MSG
+          : 'ارسال به سرور ناموفق بود (HTTP ' + r.status + ')';
+        return false;
+      });
+    }).catch(function () {
+      SERVER_MSG = 'در اتصال به سرور مشکلی پیش آمد.';
+      return false;
+    });
   }
 
   /* DELETE one row by id. Returns Promise<boolean>. */
@@ -206,7 +233,16 @@
     return fetch(base + '/api/' + LOCK_PATH + '/' + encodeURIComponent(id), {
       method: 'DELETE',
       headers: { 'X-API-Key': key }
-    }).then(function (r) { return r.ok; }).catch(function () { return false; });
+    }).then(function (r) {
+      if (r.ok) { SERVER_MSG = ''; return true; }
+      return r.text().then(function (t) {
+        SERVER_MSG = (t && t.indexOf('exceeded') !== -1) ? QUOTA_MSG : '';
+        return false;
+      });
+    }).catch(function () {
+      SERVER_MSG = 'در اتصال به سرور مشکلی پیش آمد.';
+      return false;
+    });
   }
 
   function makeUserRecord(name, plain) {
@@ -218,7 +254,7 @@
 
   /* First boot: make sure the built-in admin account exists. */
   function ensureAdmin() {
-    if (userByName(ADMIN_NAME)) return Promise.resolve(true);
+    if (hasRealAdmin()) return Promise.resolve(true);
     return makeUserRecord(ADMIN_NAME, ADMIN_DEFAULT_PASSWORD).then(function (rec) {
       return saveUser(rec).then(function (ok) { if (ok) users.push(rec); return ok; });
     });
@@ -387,7 +423,7 @@
       btn.disabled = true; btn.textContent = 'در حال بررسی...';
       err.textContent = '';
       fetchUsers().then(function (rows) {
-        users = rows.filter(function (r) { return r.id !== 'lock'; });
+        adoptRows(rows);
         var rec = userByName(name);
         if (!rec || !rec.hash) return Promise.reject({ code: 'nouser' });
         return hashPassword(pw, rec.salt, rec.iter || 120000, rec.alg || 'pbkdf2').then(function (h) {
@@ -405,6 +441,20 @@
     });
     show(form);
     setTimeout(function () { var i = document.getElementById('lk-user'); if (i) i.focus(); }, 60);
+  }
+
+  function renderSeedPending(needSeed) {
+    var retry = el('button', { type: 'button', 'class': 'lk-btn', text: 'تلاش دوباره' });
+    retry.addEventListener('click', function () { boot(); });
+    var box = card([brand(), el('div', { 'class': 'lk-rule' }),
+      el('h1', { text: 'در حال آماده‌سازی حساب ادمین…' }),
+      el('p', { 'class': 'lk-sub', text: (needSeed
+        ? 'حساب ادمین (admin با رمز پیش‌فرض 1111) هنوز در ساخته نشده است. '
+        : 'حساب ادمین هنوز ثبت نشده است. ')
+        + 'سرور ابری موقتاً محدود است؛ بعد از فعال شدن، دوباره تلاش کنید.' }),
+      retry,
+      el('div', { 'class': 'lk-err', text: QUOTA_MSG })]);
+    show(box);
   }
 
   function renderOffline() {
@@ -461,8 +511,10 @@
 
     function renderList() {
       listEl.innerHTML = '';
-      if (!users.length) { listEl.appendChild(el('div', { 'class': 'la-empty', text: 'کاربری ثبت نشده است' })); return; }
-      users.slice().sort(function (a, b) {
+      var list = users.slice();
+      if (legacyRec && !hasRealAdmin()) list.push({ id: userId(ADMIN_NAME) });
+      if (!list.length) { listEl.appendChild(el('div', { 'class': 'la-empty', text: 'کاربری ثبت نشده است' })); return; }
+      list.sort(function (a, b) {
         var aa = a.id === userId(ADMIN_NAME) ? 0 : 1, bb = b.id === userId(ADMIN_NAME) ? 0 : 1;
         return aa - bb || String(a.id).localeCompare(String(b.id));
       }).forEach(function (u) {
@@ -480,7 +532,7 @@
             if (!confirm('کاربر «' + name + '» حذف شود؟')) return;
             delBtn.disabled = true;
             deleteRow(userId(name)).then(function (ok) {
-              if (!ok) { delBtn.disabled = false; say('حذف ناموفق بود — ارتباط با سرور', true); return; }
+              if (!ok) { delBtn.disabled = false; say(SERVER_MSG || 'حذف ناموفق بود — ارتباط با سرور', true); return; }
               users = users.filter(function (x) { return x.id !== userId(name); });
               if (inlineBox && inlineBox.dataset.user === name) { inlineBox.remove(); inlineBox = null; }
               renderList();
@@ -516,9 +568,10 @@
           return saveUser(rec).then(function (ok) { return { ok: ok, rec: rec }; });
         }).then(function (res) {
           save.disabled = false; save.textContent = 'ذخیره رمز';
-          if (!res || !res.ok) { say('ارسال به سرور ناموفق بود', true); return; }
+          if (!res || !res.ok) { say(SERVER_MSG || 'ارسال به سرور ناموفق بود', true); return; }
           users = users.filter(function (x) { return x.id !== res.rec.id; });
           users.push(res.rec);
+          if (res.rec.id === userId(ADMIN_NAME) && legacyRec) { legacyRec = null; deleteRow('lock'); }
           inlineBox.remove(); inlineBox = null;
           renderList();
           say('رمز کاربر «' + name + '» عوض شد');
@@ -546,7 +599,7 @@
         return saveUser(rec).then(function (ok) { return { ok: ok, rec: rec }; });
       }).then(function (res) {
         createBtn.disabled = false; createBtn.textContent = 'ساخت کاربر';
-        if (!res || !res.ok) { say('ارسال به سرور ناموفق بود', true); return; }
+        if (!res || !res.ok) { say(SERVER_MSG || 'ارسال به سرور ناموفق بود', true); return; }
         users.push(res.rec);
         newName.value = ''; newPass.value = ''; newPass2.value = '';
         renderList();
@@ -575,9 +628,10 @@
         myBtn.disabled = false; myBtn.textContent = 'تغییر رمز من';
         if (!res) { say('خطا در بررسی', true); return; }
         if (res.why === 'pass') { say('رمز فعلی اشتباه است', true); curP.value = ''; curP.focus(); return; }
-        if (!res.ok) { say('ارسال به سرور ناموفق بود', true); return; }
+        if (!res.ok) { say(SERVER_MSG || 'ارسال به سرور ناموفق بود', true); return; }
         users = users.filter(function (x) { return x.id !== res.rec.id; });
         users.push(res.rec);
+        if (res.rec.id === userId(ADMIN_NAME) && legacyRec) { legacyRec = null; deleteRow('lock'); }
         curP.value = ''; myP1.value = ''; myP2.value = '';
         say('رمز شما تغییر کرد');
       });
@@ -636,15 +690,22 @@
   function boot() {
     purgeLegacy();
     fetchUsers().then(function (rows) {
-      users = rows.filter(function (r) { return r.id && r.id !== 'lock'; });
-      var hasLegacy = rows.some(function (r) { return r.id === 'lock'; });
-      var needSeed = !userByName(ADMIN_NAME);
+      adoptRows(rows);
+      var needSeed = !hasRealAdmin();
       var seed = needSeed ? ensureAdmin() : Promise.resolve(true);
-      return seed.then(function () {
-        if (hasLegacy && userByName(ADMIN_NAME)) deleteRow('lock'); // best effort
+      return seed.then(function (ok) {
+        // drop the legacy row ONLY after a real u_admin row exists
+        if (ok && legacyRec && hasRealAdmin()) {
+          legacyRec = null;
+          deleteRow('lock'); // best effort
+        }
         var su = sessionUser();
         if (su && userByName(su)) { finishUnlock(su); return; }
         setSessionUser(null);
+        if (!users.length && !userByName(ADMIN_NAME)) {
+          renderSeedPending(needSeed); // server reachable but admin not created yet
+          return;
+        }
         renderLogin();
       });
     }).catch(function () {
@@ -676,10 +737,7 @@
       openAdmin: openAdmin,
       logout: logout,
       refresh: function () {
-        return fetchUsers().then(function (rows) {
-          users = rows.filter(function (r) { return r.id !== 'lock'; });
-          return users;
-        });
+        return fetchUsers().then(function (rows) { return adoptRows(rows); });
       }
     };
   }
