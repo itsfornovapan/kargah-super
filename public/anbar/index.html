@@ -441,7 +441,9 @@ td.wrap{white-space:normal;word-break:break-word}
 }
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-</style>
+#drawerNav [data-decor-admin]{display:none!important}
+body.is-admin #drawerNav [data-decor-admin]{display:flex!important}
+  </style>
 
 <!-- Cloud Sync Support -->
 <script>
@@ -479,6 +481,7 @@ button[data-decor-lock]:hover{background:#2a3a54;color:#e8eef8;border-color:#FF9
 <!-- Deco Sahand lock screen -->
 <script>window.DECOR_LOCK_API_BASE = 'https://kargah-anbar-api.itsfordecosahand.workers.dev';</script>
 <script>window.DECOR_LOCK_API_KEY  = 'wYb9XPNSAGPE7ZLEe98hypIfzo8cvZZfHWte6Ug6myGutboJ';</script>
+<script>window.DECOR_LOCK_MODULE = 'anbar';</script>
 <script>window.DECOR_LOCK_PATH    = 'lock';</script>
 <script src="./lock.js"></script>
 <!-- Cloud Sync Indicator -->
@@ -515,10 +518,9 @@ button[data-decor-lock]:hover{background:#2a3a54;color:#e8eef8;border-color:#FF9
     <button data-tab="calc" style="--i:5"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="11" x2="8.01" y2="11"/><line x1="12" y1="11" x2="12.01" y2="11"/><line x1="16" y1="11" x2="16.01" y2="11"/><line x1="8" y1="15" x2="8.01" y2="15"/><line x1="12" y1="15" x2="12.01" y2="15"/><line x1="16" y1="15" x2="16.01" y2="15"/><line x1="8" y1="19" x2="16" y2="19"/></svg></span><span>محاسبه و فاکتور</span></button>
     <button data-tab="settings" style="--i:6"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span><span>پشتیبان‌گیری</span></button>
   
-    <a class="home" href="../" title="بازگشت به لانچر">
-      <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/></svg></span><span>همه برنامه‌ها</span>
-    </a>
-    <button data-decor-lock style="--i:7"><span class="ico">🔒</span><span>تغییر / قفل</span></button>
+
+    <button data-decor-admin style="--i:7"><span class="ico">🔐</span><span>مدیریت کاربران</span></button>
+    <button data-decor-logout style="--i:8"><span class="ico">🚪</span><span>خروج از حساب</span></button>
   </nav>
 </aside>
 
@@ -2444,7 +2446,17 @@ function viewSettings(){
     hardware: state.hardware.length, templates: state.templates.length,
     jobs: state.jobs.length
   };
-  return `
+  const isAdmin = !!(window.DecorAuth && window.DecorAuth.isAdmin && window.DecorAuth.isAdmin());
+  const adminCard = isAdmin ? `
+  <div class="card" style="--d:0">
+    ${secHead('lock', 'حساب و دسترسی‌ها (فقط ادمین)', null)}
+    <p class="hint">کاربران و رمزهای این پنل (انبار) مستقل از پنل مالی مدیریت می‌شوند.</p>
+    <div class="row" style="margin-top:12px">
+      <button class="btn pri" data-decor-admin>${ico('lock',15)} مدیریت کاربران و رمزها</button>
+      <a class="btn" href="../">${ico('folder',15)} بازگشت به لانچر</a>
+    </div>
+  </div>` : '';
+  return `${adminCard}
   <div class="card" style="--d:0">
     ${secHead('down', 'پشتیبانگیری (Export)', null)}
     <p class="hint">تمام دادهها را در یک فایل JSON ذخیره کنید.</p>
@@ -3057,6 +3069,8 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
 /* =========================================================
    Init
 ========================================================= */
+window.addEventListener('decor:unlocked', function(){ try { render(); } catch(e) {} });
+window.addEventListener('decor:locked', function(){ try { render(); } catch(e) {} });
 load();
 render();
 </script>
