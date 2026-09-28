@@ -639,7 +639,7 @@ const state = {
 
 const uid   = () => Math.random().toString(36).slice(2,9)
 const nowMs = () => Date.now()
-const nowMs = () => Date.now() + Date.now().toString(36).slice(-3);
+
 const esc   = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num   = v => { const n = parseFloat(String(v ?? '').replace(/[^\d.\-]/g,'')); return isNaN(n) ? 0 : n; };
 const fmt   = n => new Intl.NumberFormat('fa-IR',{maximumFractionDigits:2}).format(num(n));
