@@ -948,7 +948,27 @@ function ExpensesPage({data,setData,setToast}){
               <td style={{fontWeight:600}}>{ex.name}</td>
               <td><div style={{color:'var(--accent)',fontWeight:600}}>{formatMoney(ex.amount)} <span style={{fontWeight:400,fontSize:11}}>{getUnitLabel(unit)}</span></div><div className="money-inline-words">{numberToPersianWords(ex.amount)} {getUnitLabel(unit)}</div></td>
               <td>روز {ex.dueDay}{effDay!==ex.dueDay?<span style={{fontSize:10,color:'var(--text-muted)'}}> ({effDay})</span>:''}</td>
-              <td><div style={{display:'flex',gap:6,alignItems:'center',flexWrap:'wrap'}}>{isPaid?<><span className="badge paid">پرداخت شده</span><button className="btn btn-outline btn-sm" onClick={()=>togglePaid(ex)}>لغو</button></>:<>{isDueToday&&<span className="badge unpaid">امروز</span>}<button className="btn btn-success btn-sm" onClick={()=>togglePaid(ex)}>پرداخت شد</button></>}</div></td>
+              <td>
+  <div style={{display:'flex',gap:6,alignItems:'center',flexWrap:'wrap'}}>
+    {isDueToday&&<span className="badge partial">امروز</span>}
+    <button
+      className="badge"
+      onClick={()=>togglePaid(ex)}
+      style={{
+        background: isPaid ? '#22c55e' : '#ef4444',
+        color: '#fff',
+        cursor: 'pointer',
+        border: 'none',
+        fontFamily: 'inherit',
+        padding: '5px 12px',
+        fontSize: '11.5px'
+      }}
+      title={isPaid ? 'کلیک کنید تا به «پرداخت نشده» برگردد' : 'کلیک کنید تا پرداخت ثبت شود'}
+    >
+      {isPaid ? '✓ پرداخت شده' : '✗ پرداخت نشده'}
+    </button>
+  </div>
+</td>
               <td><span className="badge" style={{background:getCategoryColor(ex.category)+'22',color:getCategoryColor(ex.category)}}>{getCategoryLabel(ex.category)}</span></td>
               <td><span className="badge" style={{background:ex.isRecurring?'var(--accent-bg)':'var(--surface-3)',color:ex.isRecurring?'var(--accent)':'var(--text-secondary)'}}>{ex.isRecurring?'تکرارشونده':'یکبار'}</span></td>
               <td><div style={{display:'flex',gap:6}}><button className="btn-icon" style={{width:28,height:28}} onClick={()=>startEdit(ex)}>✏️</button><button className="btn-icon" style={{width:28,height:28}} onClick={()=>deleteExpense(ex)}>{Icons.trash}</button></div></td>

@@ -1,446 +1,538 @@
-// Decor Lock System - Unified Password Management
-// Only the first device that creates a password becomes ADMIN
-// Admin can change password; other devices can only verify against admin's password
+/* ============================================================
+   Decor Sahand — shared entry lock
+   ------------------------------------------------------------
+   One password per module section (anbar / fin), stored in each
+   module's own Cloudflare D1 database under settings row id='lock'.
+   When the overlay renders it calls `fetchLock()` and
+   `saveLock()` which talk to the real API — no localStorage leak.
 
+   * first entry for a module -> CREATE screen
+   * later entries             -> ENTER screen (hash verified server-side)
+   * Settings -> change it or lock again
+   * unlock lasts for the tab session; sessionStorage still tracks that.
+
+   Public API contract (each module calls its own API_BASE):
+     GET /api/settings          -> [{id, ...}]
+     PUT /api/settings          -> replace ALL settings rows (batch)
+   ============================================================ */
 (function () {
   'use strict';
-  var root, el;
-  // ── Configuration ────────────────────────────────────────────────────────
-  var LOCK_PATH = '/lock';
+
+  /* Each caller MUST set these before init() runs:
+       window.DECOR_LOCK_API_BASE  (e.g. https://kargah-anbar-api... or https://ktd-api...)
+       window.DECOR_LOCK_API_KEY   (real X-API-Key, NOT embedded)
+    If missing we fall back to localStorage for backward compatibility
+    and print a warning. */
+
   var SESSION_KEY = 'decor_lock_session_v1';
+  var ADMIN_KEY = 'decor_lock_admin_device';
+  function isAdmin() { try { return localStorage.getItem(ADMIN_KEY) === 'true'; } catch (e) { return false; } }
+  function markAdmin() { try { localStorage.setItem(ADMIN_KEY, 'true'); } catch (e) {} }
   var LOCK_ROW_ID = 'lock';
-  var ADMIN_KEY = 'decor_lock_admin_device'; // Tracks which device is admin
+  var LOCK_PATH = 'lock';
+  if (typeof window !== 'undefined' && window.DECOR_LOCK_PATH) LOCK_PATH = String(window.DECOR_LOCK_PATH).replace(/^\/api\//, '');
   var MIN_LEN = 4;
-  var DEFAULT_PASSWORD = '1234556';
-  var RECORD_VERSION = 2;
-  
-  if (typeof window !== 'undefined' && window.DECOR_LOCK_PATH) LOCK_PATH = window.DECOR_LOCK_PATH;
-  
-  // ── Helpers ──────────────────────────────────────────────────────────────
+  var DEFAULT_PASSWORD = '1234556';  // کاربر میتواند تغییر دهد
+  var RECORD_VERSION = 2;  // bumped when storage model changes
+
+  var root = null;
+  var record = null;    // {v, alg, iter, salt, hash, updatedAt} or null
+  var unlocked = false;
+
+  /* ---------- session flag (in-memory only, survives no-sync edits) ---------- */
+
+  function sessionFlag() {
+    try { return sessionStorage.getItem(SESSION_KEY) === '1'; } catch (e) { return false; }
+  }
+  function setSessionFlag(on) {
+    try {
+      if (on) sessionStorage.setItem(SESSION_KEY, '1');
+      else sessionStorage.removeItem(SESSION_KEY);
+    } catch (e) {}
+  }
+
+  /* ---------- crypto helpers (unchanged from v1) ---------- */
+
+  function toHex(buf) {
+    var s = '', b = new Uint8Array(buf);
+    for (var i = 0; i < b.length; i++) s += ('0' + b[i].toString(16)).slice(-2);
+    return s;
+  }
+  function randomSalt() {
+    var a = new Uint8Array(16);
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) crypto.getRandomValues(a);
+    else for (var i = 0; i < a.length; i++) a[i] = Math.floor(Math.random() * 256);
+    return toHex(a);
+  }
+  function hasWebCrypto() {
+    return typeof crypto !== 'undefined' && !!crypto.subtle && typeof TextEncoder !== 'undefined';
+  }
+  function hexToBytes(hex) {
+    var out = new Uint8Array(hex.length / 2);
+    for (var i = 0; i < out.length; i++) out[i] = parseInt(hex.substr(i * 2, 2), 16);
+    return out;
+  }
+  function pickAlg() { return hasWebCrypto() ? 'pbkdf2' : 'sha256-iter'; }
+  function pickIter(alg) { return alg === 'pbkdf2' ? 120000 : 600; }
+
+  /* Compact SHA-256 (fallback when WebCrypto unavailable). */
+  function sha256hex(input) {
+    var K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+             0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+             0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+             0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+             0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+             0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+             0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+             0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+    function utf8(str) {
+      var out = [];
+      for (var i = 0; i < str.length; i++) {
+        var c = str.charCodeAt(i);
+        if (c < 128) out.push(c);
+        else if (c < 2048) out.push(192 | (c >> 6), 128 | (c & 63));
+        else if (c >= 0xd800 && c < 0xdc00) {
+          var c2 = str.charCodeAt(++i);
+          var cp = 0x10000 + ((c & 0x3ff) << 10) + (c2 & 0x3ff);
+          out.push(240 | (cp >> 18), 128 | ((cp >> 12) & 63), 128 | ((cp >> 6) & 63), 128 | (cp & 63));
+        } else out.push(224 | (c >> 12), 128 | ((c >> 6) & 63), 128 | (c & 63));
+      }
+      return out;
+    }
+    var bytes = utf8(input);
+    var bitLen = bytes.length * 8;
+    bytes.push(0x80);
+    while (bytes.length % 64 !== 56) bytes.push(0);
+    for (var i2 = 7; i2 >= 0; i2--) bytes.push((bitLen / Math.pow(2, i2 * 8)) & 0xff);
+    var H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+    var w = new Array(64);
+    function rotr(x, n) { return (x >>> n) | (x << (32 - n)); }
+    for (var off = 0; off < bytes.length; off += 64) {
+      for (var t = 0; t < 16; t++) {
+        var j = off + t * 4;
+        w[t] = ((bytes[j] << 24) | (bytes[j + 1] << 16) | (bytes[j + 2] << 8) | bytes[j + 3]) >>> 0;
+      }
+      for (var t2 = 16; t2 < 64; t2++) {
+        var s0 = rotr(w[t2 - 15], 7) ^ rotr(w[t2 - 15], 18) ^ (w[t2 - 15] >>> 3);
+        var s1 = rotr(w[t2 - 2], 17) ^ rotr(w[t2 - 2], 19) ^ (w[t2 - 2] >>> 10);
+        w[t2] = (w[t2 - 16] + s0 + w[t2 - 7] + s1) >>> 0;
+      }
+      var a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+      for (var t3 = 0; t3 < 64; t3++) {
+        var S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+        var ch = (e & f) ^ (~e & g);
+        var temp1 = (h + S1 + ch + K[t3] + w[t3]) >>> 0;
+        var S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+        var maj = (a & b) ^ (a & c) ^ (b & c);
+        var temp2 = (S0 + maj) >>> 0;
+        h = g; g = f; f = e; e = (d + temp1) >>> 0;
+        d = c; c = b; b = a; a = (temp1 + temp2) >>> 0;
+      }
+      H[0] = (H[0] + a) >>> 0; H[1] = (H[1] + b) >>> 0; H[2] = (H[2] + c) >>> 0; H[3] = (H[3] + d) >>> 0;
+      H[4] = (H[4] + e) >>> 0; H[5] = (H[5] + f) >>> 0; H[6] = (H[6] + g) >>> 0; H[7] = (H[7] + h) >>> 0;
+    }
+    return H.map(function (x) { return ('00000000' + x.toString(16)).slice(-8); }).join('');
+  }
+
+  function hashPassword(password, salt, iterations, alg) {
+    if (alg === 'pbkdf2' && hasWebCrypto()) {
+      return crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits'])
+        .then(function (key) {
+          return crypto.subtle.deriveBits(
+            { name: 'PBKDF2', salt: hexToBytes(salt), iterations: iterations, hash: 'SHA-256' },
+            key, 256);
+        })
+        .then(toHex);
+    }
+    var h = sha256hex(salt + ':' + password);
+    for (var i = 1; i < iterations; i++) h = sha256hex(h + salt + ':' + password);
+    return Promise.resolve(h);
+  }
+
+  /* ---------- server-side lock record (GET/PUT settings row) ---------- */
+
+  function getApiBase() {
+    return (typeof window !== 'undefined' && window.DECOR_LOCK_API_BASE) || '';
+  }
+  function getApiKey() {
+    return (typeof window !== 'undefined' && window.DECOR_LOCK_API_KEY) || '';
+  }
+
+  /* Load lock record from the server. Returns a plain object or null. */
+  function fetchLock() {
+    var base = getApiBase(), key = getApiKey();
+    if (!base) return Promise.reject(new Error('no-config'));
+    var req = new Request(base + '/api/' + LOCK_PATH, { headers: { 'X-API-Key': key, 'Content-Type': 'application/json' } });
+    return fetch(req).then(function (r) {
+      if (!r.ok) return Promise.reject(new Error('http ' + r.status));
+      return r.json().then(function (rows) {
+        if (!Array.isArray(rows)) return null;
+        var rec = rows.find(function (r) { return r && r.id === LOCK_ROW_ID; });
+        if (!rec) return null;
+        return { v: rec.v || RECORD_VERSION, alg: rec.alg, iter: Number(rec.iter) || 120000,
+                 salt: rec.salt, hash: rec.hash, updatedAt: rec.updatedAt || rec.updated_at };
+      });
+    }).catch(function (e) { return Promise.reject(e || new Error('network')); });
+  }
+
+  /* Upsert the lock row inside the module's settings table. */
+  function saveLock(serverRecord) {
+    var base = getApiBase(), key = getApiKey();
+    if (!base || !serverRecord) return Promise.resolve(false);
+    // Build the full settings array: keep existing rows, replace the lock row.
+    return fetch(base + '/api/' + LOCK_PATH, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-API-Key': key },
+      body: JSON.stringify(serverRecord)
+    }).then(function (r) { return r.ok; }).catch(function () { return false; });
+  }
+
+  /* Local password storage removed: hash lives only in the D1 database. */
+
+  /* ---------- overlay DOM (unchanged visual) ---------- */
+
+  var CSS =
+    '#decor-lock{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;' +
+    'padding:20px;background:radial-gradient(900px 500px at 70% -10%,rgba(255,153,0,.16),transparent 60%),#0b1220;' +
+    "font-family:'Vazirmatn','Segoe UI',Tahoma,system-ui,sans-serif;color:#e7edf7;direction:rtl}" +
+    '#decor-lock *{box-sizing:border-box}' +
+    '#decor-lock .lk-card{width:100%;max-width:360px;background:#121a2b;border:1px solid #22304a;border-radius:20px;' +
+    'padding:26px 22px 22px;box-shadow:0 24px 60px rgba(0,0,0,.55)}' +
+    '#decor-lock .lk-brand{text-align:center;font-weight:800;font-size:26px;line-height:1;letter-spacing:-.5px;margin-bottom:4px}' +
+    '#decor-lock .lk-brand b{color:#fff;font-weight:800}' +
+    '#decor-lock .lk-brand i{color:#FF9900;font-style:normal;text-shadow:0 4px 18px rgba(255,153,0,.45)}' +
+    '#decor-lock .lk-rule{width:96px;height:4px;border-radius:99px;margin:9px auto 18px;' +
+    'background:linear-gradient(90deg,#d97706,#FF9900)}' +
+    '#decor-lock h1{font-size:17px;margin:0 0 6px;text-align:center;font-weight:800}' +
+    '#decor-lock p.lk-sub{font-size:12.8px;color:#93a3bf;text-align:center;margin:0 0 16px;line-height:1.9}' +
+    '#decor-lock label{display:block;font-size:12.5px;color:#93a3bf;margin:0 0 6px}' +
+    '#decor-lock .lk-field{position:relative;margin-bottom:12px}' +
+    '#decor-lock input{width:100%;padding:12px 14px;padding-left:44px;background:#0e1626;border:1px solid #26344f;' +
+    'border-radius:12px;color:#e7edf7;font-size:15px;font-family:inherit;outline:none;transition:border-color .18s,box-shadow .18s}' +
+    '#decor-lock input:focus{border-color:#FF9900;box-shadow:0 0 0 3px rgba(255,153,0,.16)}' +
+    '#decor-lock .lk-eye{position:absolute;left:8px;top:50%;transform:translateY(-50%);background:none;border:0;' +
+    'color:#93a3bf;cursor:pointer;padding:6px;font-size:14px;font-family:inherit}' +
+    '#decor-lock .lk-eye:hover{color:#FF9900}' +
+    '#decor-lock .lk-btn{width:100%;padding:13px;border:0;border-radius:12px;background:linear-gradient(180deg,#ff9900,#e07f00);' +
+    'color:#1a1206;font-weight:800;font-size:15px;font-family:inherit;cursor:pointer;margin-top:6px;transition:transform .12s,filter .18s}' +
+    '#decor-lock .lk-btn:hover{filter:brightness(1.06)}' +
+    '#decor-lock .lk-btn:active{transform:scale(.985)}' +
+    '#decor-lock .lk-btn:disabled{opacity:.55;cursor:default}' +
+    '#decor-lock .lk-err{min-height:19px;font-size:12.6px;color:#fca5a5;text-align:center;margin-top:10px;line-height:1.7}' +
+    '#decor-lock .lk-note{font-size:11.6px;color:#6f819e;text-align:center;margin-top:14px;line-height:1.9;' +
+    'border-top:1px solid #1c2740;padding-top:12px}' +
+    '#decor-lock .lk-shake{animation:lkshake .32s}' +
+    '@keyframes lkshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}';
+
+  var CHANGE_CSS =
+    '#decor-lock-change{position:fixed;inset:0;z-index:1000001;display:flex;align-items:center;justify-content:center;' +
+    'padding:20px;background:rgba(4,8,16,.72);backdrop-filter:blur(3px);' +
+    "font-family:'Vazirmatn','Segoe UI',Tahoma,system-ui,sans-serif;color:#e7edf7;direction:rtl}" +
+    '#decor-lock-change .lk-card{width:100%;max-width:360px;background:#121a2b;border:1px solid #22304a;' +
+    'border-radius:20px;padding:24px 22px;box-shadow:0 24px 60px rgba(0,0,0,.6)}' +
+    '#decor-lock-change h1{font-size:16.5px;margin:0 0 14px;font-weight:800}' +
+    '#decor-lock-change input{width:100%;padding:12px 14px;background:#0e1626;border:1px solid #26344f;border-radius:12px;' +
+    'color:#e7edf7;font-size:15px;font-family:inherit;outline:none;margin-bottom:12px}' +
+    '#decor-lock-change input:focus{border-color:#FF9900;box-shadow:0 0 0 3px rgba(255,153,0,.16)}' +
+    '#decor-lock-change .lk-row{display:flex;gap:10px;margin-top:6px}' +
+    '#decor-lock-change button{flex:1;padding:12px;border-radius:11px;font-family:inherit;font-size:14px;cursor:pointer;' +
+    'border:1px solid #26344f;background:#16203456;color:#e7edf7;transition:background .18s,border-color .18s}' +
+    '#decor-lock-change button.primary{background:linear-gradient(180deg,#ff9900,#e07f00);border-color:transparent;color:#1a1206;font-weight:800}' +
+    '#decor-lock-change button:hover{border-color:#FF9900}' +
+    '#decor-lock-change .lk-locknow{margin-top:14px;width:100%;background:transparent;border-style:dashed;color:#93a3bf;font-size:13px}' +
+    '#decor-lock-change .lk-err{min-height:18px;font-size:12.6px;color:#fca5a5;text-align:center;margin-top:8px}';
+
   function el(tag, attrs, children) {
-    var e = document.createElement(tag);
-    if (attrs) Object.entries(attrs).forEach(function ([k, v]) {
-      if (k === 'text') e.textContent = v;
-      else if (k === 'class') e.className = v;
-      else if (k.startsWith('on') && typeof v === 'function') e.addEventListener(k.slice(2).toLowerCase(), v);
-      else if (k !== 'children') e.setAttribute(k, String(v));
-    });
-    if (children) children.forEach(function (c) { if (c) e.appendChild(c); });
-    return e;
+    var node = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === 'text') node.textContent = attrs[k];
+      else if (k === 'html') node.innerHTML = attrs[k];
+      else node.setAttribute(k, attrs[k]);
+    }
+    (children || []).forEach(function (c) { if (c) node.appendChild(c); });
+    return node;
   }
-  
-  function passwordField(name, placeholder, value) {
+  function ensureStyle(id, css) {
+    if (document.getElementById(id)) return;
+    var s = document.createElement('style'); s.id = id; s.textContent = css;
+    (document.head || document.documentElement).appendChild(s);
+  }
+  function passwordField(id, placeholder) {
     var wrap = el('div', { 'class': 'lk-field' });
-    var label = el('label', { text: placeholder });
-    var input = el('input', { type: 'password', name: name, 'class': 'lk-inp', placeholder: placeholder });
-    if (value !== undefined) input.value = value;
-    wrap.appendChild(label);
-    wrap.appendChild(input);
-    return wrap;
+    var inp = el('input', { type: 'password', placeholder: placeholder, autocomplete: 'off', spellcheck: 'false', id: id });
+    var eye = el('button', { type: 'button', 'class': 'lk-eye', 'aria-label': 'نمایش رمز', text: '👁' });
+    eye.addEventListener('click', function () {
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+      eye.textContent = inp.type === 'password' ? '👁' : '🙈';
+    });
+    wrap.appendChild(inp); wrap.appendChild(eye); return wrap;
   }
-  
+  function card(children) { var c = el('div', { 'class': 'lk-card' }); (children || []).forEach(function (n) { c.appendChild(n); }); return c; }
   function brand() {
-    var logo = el('div', { 'class': 'lk-brand' }, [
-      el('span', { text: 'DECOR', style: 'color: #000; font-weight: 900;' }),
-      el('span', { text: 'Sahand', style: 'color: var(--accent, #ff7a00); font-weight: 900;' })
-    ]);
-    return el('div', { style: 'display:flex;align-items:center;gap:.4em;justify-content:center;margin-bottom:1rem;font-size:1.1rem;' }, [logo]);
+    var b = el('div', { 'class': 'lk-brand' });
+    b.appendChild(el('b', { text: 'Deco' }));
+    b.appendChild(document.createTextNode(' '));
+    b.appendChild(el('i', { text: 'Sahand' }));
+    return b;
   }
-  
-  function shake(node) {
-    node.style.transition = 'transform .08s';
-    setTimeout(function () { node.style.transform = 'translateX(-6px)'; }, 10);
-    setTimeout(function () { node.style.transform = 'translateX(6px)'; }, 90);
-    setTimeout(function () { node.style.transform = 'translateX(-4px)'; }, 170);
-    setTimeout(function () { node.style.transform = 'translateX(0)'; node.style.transition = ''; }, 250);
+  function ensureRoot() {
+    if (root && root.isConnected) return root;
+    ensureStyle('decor-lock-style', CSS);
+    root = document.getElementById('decor-lock');
+    if (!root) { root = el('div', { id: 'decor-lock' }); (document.body || document.documentElement).appendChild(root); }
+    root.hidden = false;
+    document.documentElement.style.overflow = 'hidden';
+    return root;
   }
-  
-  // ── Crypto ───────────────────────────────────────────────────────────────
-  async function hashPassword(password, salt, iterations, algorithm) {
-    algorithm = algorithm || 'pbkdf2';
-    var bytes = new TextEncoder().encode(password);
-    var saltBytes = new TextEncoder().encode(salt);
-    var iter = parseInt(iterations, 10) || 100000;
-    var hashLen = 32;
-    
-    if (algorithm === 'pbkdf2') {
-      var key = await crypto.subtle.importKey('raw', bytes, 'PBKDF2', false, ['deriveBits']);
-      var derived = await crypto.subtle.deriveBits(
-        { name: 'PBKDF2', salt: saltBytes, iterations: iter, hash: 'SHA-256' },
-        key,
-        hashLen * 8
-      );
-      return btoa(String.fromCharCode.apply(null, Array.from(new Uint8Array(derived))));
-    }
-    
-    // Default to pbkdf2 fallback
-    var key = await crypto.subtle.importKey('raw', bytes, 'PBKDF2', false, ['deriveBits']);
-    var derived = await crypto.subtle.deriveBits(
-      { name: 'PBKDF2', salt: saltBytes, iterations: iter, hash: 'SHA-256' },
-      key,
-      hashLen * 8
-    );
-    return btoa(String.fromCharCode.apply(null, Array.from(new Uint8Array(derived))));
-  }
-  
-  function pickAlg() { return 'pbkdf2'; }
-  function pickIter(alg) { return alg === 'argon2' ? 19 : 120000; }
-  function randomSalt(len) {
-    len = len || 16;
-    var arr = new Uint8Array(len);
-    crypto.getRandomValues(arr);
-    return btoa(String.fromCharCode.apply(null, Array.from(arr)));
-  }
-  
-  // ── Server Communication ─────────────────────────────────────────────────
-  var API_KEY = 'wYb9XPNSAGPE7ZLEe98hypIfzo8cvZZfHWte6Ug6myGutboJ';
-  
-  async function fetchLock() {
+  function hideRoot() { if (root) { root.remove(); root = null; } document.documentElement.style.overflow = ''; }
+  function show(node) { var r = ensureRoot(); r.innerHTML = ''; r.appendChild(node); return r; }
+  function shake(r) { var c = r.querySelector('.lk-card'); if (!c) return; c.classList.remove('lk-shake'); void c.offsetWidth; c.classList.add('lk-shake'); }
+  function toast(msg) {
     try {
-      var resp = await fetch(LOCK_PATH, {
-        headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY }
-      });
-      if (!resp.ok) throw new Error('HTTP ' + resp.status);
-      return await resp.json();
-    } catch (e) {
-      console.error('fetchLock failed:', e);
-      return null;
-    }
+      var t = el('div', { text: msg, role: 'status' });
+      t.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:1000002;' +
+        'background:#1A1A1A;color:#fff;border:1px solid #3A3A3A;border-radius:11px;padding:10px 16px;' +
+        'font-size:13px;font-family:Vazirmatn,sans-serif;box-shadow:0 8px 26px rgba(0,0,0,.5);opacity:0;transition:opacity .3s';
+      document.body.appendChild(t);
+      requestAnimationFrame(function () { t.style.opacity = '1'; });
+      setTimeout(function () { t.style.opacity = '0'; setTimeout(function () { if (t.parentNode) t.parentNode.remove(); }, 400); }, 2400);
+    } catch (e) {}
   }
-  
-  async function saveLock(rows) {
-    try {
-      var resp = await fetch(LOCK_PATH, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY },
-        body: JSON.stringify(Array.isArray(rows) ? rows : [rows])
-      });
-      if (!resp.ok) throw new Error('HTTP ' + resp.status);
-      return true;
-    } catch (e) {
-      console.error('saveLock failed:', e);
-      return false;
-    }
-  }
-  
-  // ── State ────────────────────────────────────────────────────────────────
-  var record = null;
-  var isAdmin = false;
-  
-  // ── UI Rendering ─────────────────────────────────────────────────────────
-  function renderLoading() {
-    root.innerHTML = '';
-    var spinner = el('div', { 'class': 'lk-spinner' });
-    root.appendChild(spinner);
-  }
-  
+
+  /* ---------------- screens ---------------- */
+
   function renderCreate() {
     var err = el('div', { 'class': 'lk-err' });
-    var p1 = passwordField('lk-new', 'رمز عبور (حداقل ۴ نویسه)', DEFAULT_PASSWORD);
-    var p2 = passwordField('lk-new2', 'تکرار رمز عبور', DEFAULT_PASSWORD);
+    var p1 = passwordField('lk-new', 'رمز عبور (حداقل ۴ نویسه)');
+    p1.querySelector('input').value = DEFAULT_PASSWORD;
+    var p2 = passwordField('lk-new2', 'تکرار رمز عبور');
     var btn = el('button', { type: 'submit', 'class': 'lk-btn', text: 'ساختن رمز و ورود' });
     var form = el('form', { 'class': 'lk-form' }, [
-      brand(),
-      el('div', { 'class': 'lk-rule' }),
+      brand(), el('div', { 'class': 'lk-rule' }),
       el('h1', { text: 'ایجاد رمز عبور' }),
-      el('p', { 'class': 'lk-sub', text: 'این رمز برای تمام دستگاه‌ها یکسان خواهد بود. اگر اولین بار است که وارد می‌شوید، این دستگاه ادمین می‌شود.' }),
+      el('p', { 'class': 'lk-sub', text: 'این رمز فقط برای ورود به این بخش (انبار / مالی) استفاده میشود.' }),
       p1, p2, btn, err,
-      el('div', { 'class': 'lk-note', text: 'رمز در سرور ذخیره می‌شود و روی همه دستگاه‌ها یکسان است.' })
+      el('div', { 'class': 'lk-note', text: 'رمز در سرور (دیتابیس ابری) ذخیره میشود و روی گوشی شما نمیماند.' })
     ]);
-    
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var v1 = p1.querySelector('input').value, v2 = p2.querySelector('input').value;
       if (v1.length < MIN_LEN) { err.textContent = 'رمز باید حداقل ' + MIN_LEN + ' نویسه باشد'; shake(root); return; }
       if (v1 !== v2) { err.textContent = 'رمزهای واردشده یکسان نیستند'; shake(root); return; }
-      
-      // Check if lock already exists (another device created it)
-      fetchLock().then(function (existing) {
-        if (existing && existing.rows && existing.rows.length > 0) {
-          // Lock already exists, redirect to verify
-          err.textContent = 'رمز قبلاً توسط دستگاه دیگری ساخته شده. لطفاً وارد شوید.';
-          shake(root);
-          setTimeout(function() { renderVerify(); }, 2000);
-          return;
-        }
-        
-        // This device is creating the lock - become ADMIN
-        err.textContent = '';
-        btn.disabled = true; btn.textContent = 'در حال ساخت...';
-        var alg = 'pbkdf2', iter = 120000, salt = randomSalt();
-        
-        hashPassword(v1, salt, iter, alg).then(function (h) {
-          var rec = { 
-            id: LOCK_ROW_ID, 
-            v: RECORD_VERSION, 
-            alg: alg, 
-            iter: iter, 
-            salt: salt, 
-            hash: h, 
-            updated_at: new Date().toISOString(),
-            isAdmin: true  // Mark this as admin device
-          };
-          return saveLock([rec]).then(function (ok) {
-            if (ok) {
-              isAdmin = true;
-              try { localStorage.setItem(ADMIN_KEY, 'true'); } catch(e) {}
-            }
-            return ok;
-          });
-        }).then(function (ok) {
-          if (!ok) { btn.disabled = false; btn.textContent = 'ساختن رمز و ورود'; err.textContent = 'ارسال به سرور ناموفق بود'; return; }
-          record = { v: RECORD_VERSION, alg: alg, iter: iter, salt: salt, hash: '' };
-          finishUnlock();
-        }).catch(function () { btn.disabled = false; btn.textContent = 'ساختن رمز و ورود'; err.textContent = 'خطا در اتصال به سرور'; });
-      });
-    });
-    
-    root.innerHTML = '';
-    root.appendChild(form);
-  }
-  
-  function renderVerify() {
-    var err = el('div', { 'class': 'lk-err' });
-    var p1 = passwordField('lk-pass', 'رمز عبور');
-    var btn = el('button', { type: 'submit', 'class': 'lk-btn', text: 'ورود' });
-    var form = el('form', { 'class': 'lk-form' }, [
-      brand(),
-      el('div', { 'class': 'lk-rule' }),
-      el('h1', { text: 'وارد کردن رمز' }),
-      el('p', { 'class': 'lk-sub', text: 'رمز ادمین را وارد کنید.' }),
-      p1, btn, err,
-      el('div', { 'class': 'lk-note', text: 'اگر رمز را فراموش کرده‌اید، از ادمین بخواهید رمز را تغییر دهد.' })
-    ]);
-    
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var v1 = p1.querySelector('input').value;
-      if (!v1) { err.textContent = 'رمز را وارد کنید'; shake(root); return; }
-      
-      btn.disabled = true; btn.textContent = 'در حال بررسی...';
-      
-      fetchLock().then(function (existing) {
-        if (!existing || !existing.rows || existing.rows.length === 0) {
-          // No lock set yet - redirect to create
-          err.textContent = 'هنوز رمزی تنظیم نشده است. لطفاً ابتدا رمز بسازید.';
-          shake(root);
-          btn.disabled = false; btn.textContent = 'ورود';
-          setTimeout(function() { renderCreate(); }, 2000);
-          return;
-        }
-        
-        var lockRec = existing.rows[0];
-        var alg = lockRec.alg || 'pbkdf2';
-        var iter = lockRec.iter || 120000;
-        var salt = lockRec.salt || '';
-        var serverHash = lockRec.hash || '';
-        
-        return hashPassword(v1, salt, iter, alg).then(function (computedHash) {
-          if (computedHash === serverHash) {
-            // Success
-            record = { v: lockRec.v, alg: alg, iter: iter, salt: salt, hash: serverHash };
-            isAdmin = false; // Verify device is not admin unless they change password
-            finishUnlock();
-          } else {
-            err.textContent = 'رمز اشتباه است';
-            shake(root);
-            btn.disabled = false; btn.textContent = 'ورود';
-          }
-        });
-      }).catch(function () {
-        err.textContent = 'خطا در اتصال به سرور';
-        shake(root);
-        btn.disabled = false; btn.textContent = 'ورود';
-      });
-    });
-    
-    root.innerHTML = '';
-    root.appendChild(form);
-  }
-  
-  function renderChangePassword() {
-    var err = el('div', { 'class': 'lk-err' });
-    var p1 = passwordField('lk-old', 'رمز فعلی');
-    var p2 = passwordField('lk-new', 'رمز جدید');
-    var p3 = passwordField('lk-confirm', 'تکرار رمز جدید');
-    var btn = el('button', { type: 'submit', 'class': 'lk-btn', text: 'تغییر رمز' });
-    var form = el('form', { 'class': 'lk-form' }, [
-      brand(),
-      el('div', { 'class': 'lk-rule' }),
-      el('h1', { text: 'تغییر رمز عبور' }),
-      el('p', { 'class': 'lk-sub', text: 'فقط ادمین می‌تواند رمز را تغییر دهد.' }),
-      p1, p2, p3, btn, err
-    ]);
-    
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var oldPass = p1.querySelector('input').value;
-      var newPass = p2.querySelector('input').value;
-      var confirmPass = p3.querySelector('input').value;
-      
-      if (!isAdmin) {
-        err.textContent = 'شما دسترسی ادمین ندارید';
-        shake(root);
-        return;
-      }
-      
-      if (newPass.length < MIN_LEN) { err.textContent = 'رمز جدید باید حداقل ' + MIN_LEN + ' نویسه باشد'; shake(root); return; }
-      if (newPass !== confirmPass) { err.textContent = 'رمزهای جدید یکسان نیستند'; shake(root); return; }
-      
-      btn.disabled = true; btn.textContent = 'در حال تغییر...';
-      
-      // Verify old password first
-      var alg = record.alg || 'pbkdf2';
-      var iter = record.iter || 120000;
-      var salt = record.salt || '';
-      
-      hashPassword(oldPass, salt, iter, alg).then(function (oldHash) {
-        if (oldHash !== record.hash) {
-          err.textContent = 'رمز فعلی اشتباه است';
-          shake(root);
-          btn.disabled = false; btn.textContent = 'تغییر رمز';
-          return Promise.reject();
-        }
-        
-        // Create new password
-        var newSalt = randomSalt();
-        return hashPassword(newPass, newSalt, iter, alg).then(function (newHash) {
-          var rec = { 
-            id: LOCK_ROW_ID, 
-            v: RECORD_VERSION, 
-            alg: alg, 
-            iter: iter, 
-            salt: newSalt, 
-            hash: newHash, 
-            updated_at: new Date().toISOString(),
-            isAdmin: true
-          };
-          return saveLock([rec]).then(function (ok) {
-            if (ok) {
-              record.hash = newHash;
-              record.salt = newSalt;
-              return true;
-            }
+      btn.disabled = true; btn.textContent = 'در حال ساخت...';
+      var alg = pickAlg(), iter = pickIter(alg), salt = randomSalt();
+      hashPassword(v1, salt, iter, alg).then(function (h) {
+        var rec = { id: LOCK_ROW_ID, v: RECORD_VERSION, alg: alg, iter: iter, salt: salt, hash: h, updated_at: new Date().toISOString() };
+        return fetchLock().then(function (existing) {
+          if (existing) {
+            // Server already has a password (created by another device).
+            btn.disabled = false; btn.textContent = 'ساختن رمز و ورود';
+            err.textContent = 'رمز قبلاً توسط دستگاه دیگری ساخته شده است';
+            setTimeout(renderVerify, 1400);
             return false;
-          });
+          }
+          // No record on server — this device becomes ADMIN.
+          return saveLock([rec]);
         });
       }).then(function (ok) {
-        if (!ok) { btn.disabled = false; btn.textContent = 'تغییر رمز'; err.textContent = 'خطا در ذخیره‌سازی'; return; }
-        err.textContent = 'رمز با موفقیت تغییر کرد. دستگاه‌های دیگر باید با رمز جدید وارد شوند.';
-        setTimeout(function() { finishUnlock(); }, 1500);
-      }).catch(function () {
-        btn.disabled = false; btn.textContent = 'تغییر رمز';
+        if (!ok) { return; }
+        record = { v: RECORD_VERSION, alg: alg, iter: iter, salt: salt, hash: h };
+        markAdmin();
+        finishUnlock();
+      }).catch(function () { btn.disabled = false; btn.textContent = 'ساختن رمز و ورود'; err.textContent = 'خطا در اتصال به سرور'; });
+    });
+    show(form);
+    setTimeout(function () { var i = document.getElementById('lk-new'); if (i) i.focus(); }, 60);
+  }
+
+  function renderVerify() {
+    var err = el('div', { 'class': 'lk-err' });
+    var pin = passwordField('lk-pin', 'رمز عبور');
+    var btn = el('button', { type: 'submit', 'class': 'lk-btn', text: 'ورود' });
+    var form = el('form', { 'class': 'lk-form' }, [
+      brand(), el('div', { 'class': 'lk-rule' }),
+      el('h1', { text: 'ورود به برنامه' }),
+      el('p', { 'class': 'lk-sub', text: 'برای ورود به بخش انبار کارگاه / مالی رمز عبور را وارد کنید.' }),
+      pin, btn, err,
+      el('div', { 'class': 'lk-note', text: 'رمز را فراموش کردید؟ از منوی تنظیمات «تغییر رمز» را بزنید — اگر رمز فعلی را میدانید.' })
+    ]);
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = pin.querySelector('input').value;
+      if (!v) { err.textContent = 'رمز عبور را وارد کنید'; return; }
+      btn.disabled = true; btn.textContent = 'در حال بررسی...';
+      fetchLock().then(function (rec) {
+        if (!rec || !rec.hash || !rec.salt) throw new Error('no record');
+        return hashPassword(v, rec.salt, rec.iter || 120000, rec.alg || 'pbkdf2').then(function (h) {
+          var ok = (h === rec.hash);
+          var diff = 0;
+          if (h.length === rec.hash.length) { for (var i = 0; i < h.length; i++) diff |= h.charCodeAt(i) ^ rec.hash.charCodeAt(i); ok = diff === 0; }
+          return { rec: rec, ok: ok };
+        });
+      }).then(function (res) {
+        var ok = res && res.ok;
+        if (ok) { record = res.rec; finishUnlock(); return; }
+        btn.disabled = false; btn.textContent = 'ورود';
+        err.textContent = 'رمز عبور اشتباه است';
+        pin.querySelector('input').value = ''; pin.querySelector('input').focus();
+        shake(root);
+      }).catch(function (ex) {
+        if (ex && ex.message === 'no record') { renderCreate(); return; }
+        btn.disabled = false; btn.textContent = 'ورود'; err.textContent = 'خطا در اتصال به سرور';
       });
     });
-    
-    root.innerHTML = '';
-    root.appendChild(form);
+    show(form);
+    setTimeout(function () { var i = document.getElementById('lk-pin'); if (i) i.focus(); }, 60);
   }
-  
-  // ── Entry Point ──────────────────────────────────────────────────────────
-  function init(target) {
-    root = target;
-    
-    // Check if user has active session
-    try {
-      var session = localStorage.getItem(SESSION_KEY);
-      if (session === 'active') {
-        // Restore record from memory or recreate
-        var savedAdmin = localStorage.getItem(ADMIN_KEY) === 'true';
-        isAdmin = savedAdmin;
-        
-        // Load current lock from server
-        fetchLock().then(function (existing) {
-          if (existing && existing.rows && existing.rows.length > 0) {
-            var lockRec = existing.rows[0];
-            record = { 
-              v: lockRec.v, 
-              alg: lockRec.alg, 
-              iter: lockRec.iter, 
-              salt: lockRec.salt, 
-              hash: lockRec.hash 
-            };
-            renderGate();
-          } else {
-            renderCreate();
-          }
-        }).catch(function () {
-          renderGate(); // Allow offline access if server unavailable
-        });
-        return;
-      }
-    } catch (e) {
-      // localStorage not available
-    }
-    
-    // No session - check if lock exists
-    fetchLock().then(function (existing) {
-      if (existing && existing.rows && existing.rows.length > 0) {
-        renderVerify();
-      } else {
-        renderCreate();
-      }
-    }).catch(function () {
-      renderCreate();
-    });
+
+  function checkPassword(plain) {
+    if (!record || typeof record.hash !== 'string' || !record.salt) return Promise.resolve(false);
+    var alg = record.alg || 'pbkdf2';
+    return hashPassword(plain, record.salt, record.iter || 1000, alg)
+      .then(function (h) {
+        var ok = h === record.hash;
+        var diff = 0;
+        if (h.length === record.hash.length) {
+          for (var i = 0; i < h.length; i++) diff |= h.charCodeAt(i) ^ record.hash.charCodeAt(i);
+          ok = diff === 0;
+        }
+        return ok;
+      });
   }
-  
-  function renderGate() {
-    var btnCreate = el('button', { 'class': 'lk-btn lk-btn-secondary', text: 'تغییر رمز' });
-    var btnLogout = el('button', { 'class': 'lk-btn lk-btn-secondary', text: 'خروج' });
-    var note = el('p', { 'class': 'lk-sub', text: 'شما وارد شده‌اید' + (isAdmin ? ' (ادمین)' : '') });
-    
-    btnCreate.addEventListener('click', function () { renderChangePassword(); });
-    btnLogout.addEventListener('click', function () {
-      try { localStorage.removeItem(SESSION_KEY); } catch(e) {}
-      record = null;
-      isAdmin = false;
-      init(root);
-    });
-    
-    var gate = el('div', { 'class': 'lk-gate' }, [
-      brand(),
-      el('div', { 'class': 'lk-rule' }),
-      note,
-      el('div', { style: 'margin-top:2rem;display:flex;flex-direction:column;gap:.5rem;' }, [
-        btnCreate,
-        btnLogout
-      ])
-    ]);
-    
-    root.innerHTML = '';
-    root.appendChild(gate);
-  }
-  
+
   function finishUnlock() {
-    try { localStorage.setItem(SESSION_KEY, 'active'); } catch(e) {}
+    unlocked = true;
+    record = readCurrentRecord();
+    setSessionFlag(true);
+    hideRoot();
+    try { window.dispatchEvent(new CustomEvent('decor:unlocked', { detail: { via: 'lock' } })); } catch (e) {}
+  }
+
+  function readCurrentRecord() {
+    // Password hash is never persisted on the device — memory only.
+    if (record && record.hash) return record;
+    return null;
+  }
+
+  function renderOffline() {
+    var err = el('div', { 'class': 'lk-err', text: 'سرور در دسترس نیست. اتصال اینترنت را بررسی کنید.' });
+    var retry = el('button', { type: 'button', 'class': 'lk-btn', text: 'تلاش دوباره' });
+    retry.addEventListener('click', function () { renderGate(); });
+    var box = card([brand(), el('div', { 'class': 'lk-rule' }),
+      el('h1', { text: 'اتصال برقرار نشد' }),
+      el('p', { 'class': 'lk-sub', text: 'برای اولین ورود به اینترنت نیاز است؛ رمز روی سرور (دیتابیس) نگهداری می‌شود.' }),
+      retry, err]);
+    show(box);
+  }
+
+  function renderGate() {
+    // Password lives ONLY on the server (D1 database).
+    fetchLock().then(function (rec) {
+      if (!rec) { renderCreate(); return; }   // server answered: no password yet
+      record = rec;
+      if (sessionFlag()) { finishUnlock(); return; }
+      renderVerify();
+    }).catch(function () {
+      // Server unreachable: never show create (would fork the password).
+      if (sessionFlag()) { unlocked = true; hideRoot();
+        try { window.dispatchEvent(new CustomEvent('decor:unlocked', { detail: { via: 'lock' } })); } catch (e) {}
+        return; }
+      renderOffline();
+    });
+  }
+
+  /* ---------------- change / lock ---------------- */
+
+  function change() {
+    if (!unlocked) { lock(); return; }
+    if (!isAdmin()) { toast('فقط دستگاه ادمین می‌تواند رمز را تغییر دهد'); return; }
+    ensureStyle('decor-lock-change-style', CHANGE_CSS);
+    var old = document.getElementById('decor-lock-change');
+    if (old) old.remove();
+
+    var err = el('div', { 'class': 'lk-err' });
+    var cur = el('input', { type: 'password', placeholder: 'رمز فعلی', autocomplete: 'off', spellcheck: 'false' });
+    var nw = el('input', { type: 'password', placeholder: 'رمز جدید', autocomplete: 'off', spellcheck: 'false' });
+    var nw2 = el('input', { type: 'password', placeholder: 'تکرار رمز جدید', autocomplete: 'off', spellcheck: 'false' });
+    var submit = el('button', { type: 'button', 'class': 'primary', text: 'ذخیره رمز جدید' });
+    var cancel = el('button', { type: 'button', text: 'انصراف' });
+    var lockNow = el('button', { type: 'button', 'class': 'lk-locknow', text: '🔒 قفل کردن برنامه الان' });
+
+    var box = el('div', { 'class': 'lk-card' }, [
+      el('h1', { text: 'تغییر رمز عبور' }), cur, nw, nw2, err,
+      el('div', { 'class': 'lk-row' }, [submit, cancel]), lockNow
+    ]);
+    var wrap = el('div', { id: 'decor-lock-change', role: 'dialog', 'aria-modal': 'true' }, [box]);
+    document.body.appendChild(wrap);
+
+    function close() { wrap.remove(); }
+    cancel.addEventListener('click', close);
+    lockNow.addEventListener('click', function () { close(); lock(); });
+    submit.addEventListener('click', function () {
+      if (!record) { err.textContent = 'ابتدا رمز عبور بسازید'; return; }
+      checkPassword(cur.value).then(function (ok) {
+        if (!ok) { err.textContent = 'رمز فعلی اشتباه است'; cur.value = ''; cur.focus(); return; }
+        if (nw.value.length < MIN_LEN) { err.textContent = 'رمز جدید باید حداقل ' + MIN_LEN + ' نویسه باشد'; return; }
+        if (nw.value !== nw2.value) { err.textContent = 'رمزهای جدید یکسان نیستند'; return; }
+        submit.disabled = true;
+        var alg = pickAlg(), salt = randomSalt();
+        hashPassword(nw.value, salt, pickIter(alg), alg).then(function (h) {
+          var newRec = { id: LOCK_ROW_ID, v: RECORD_VERSION, alg: alg, iter: pickIter(alg), salt: salt, hash: h, updated_at: new Date().toISOString() };
+          return saveLock([newRec]);
+        }).then(function (ok) {
+          if (!ok) { submit.disabled = false; err.textContent = 'ارسال به سرور ناموفق بود'; return; }
+          record = newRec;
+          // No local copy: the password hash lives only in the D1 database.
+          submit.disabled = false;
+          close();
+          toast('رمز عبور تغییر کرد');
+        });
+      });
+    });
+    setTimeout(function () { cur.focus(); }, 60);
+  }
+
+  function lock() {
+    setSessionFlag(false);
+    unlocked = false;
+    var ch = document.getElementById('decor-lock-change');
+    if (ch) ch.remove();
+    record = null;
     renderGate();
   }
-  
-  // ── Public API ───────────────────────────────────────────────────────────
-  window.DecorLock = {
-    init: init,
-    getRecord: function () { return record; },
-    isAdmin: function () { return isAdmin; },
-    verify: function (password) {
-      if (!record) return false;
-      var alg = record.alg || 'pbkdf2';
-      var iter = record.iter || 120000;
-      var salt = record.salt || '';
-      return hashPassword(password, salt, iter, alg).then(function (hash) {
-        return hash === record.hash;
-      });
-    }
-  };
-  
-  // Auto-init if container exists
-  /* Remove legacy local password records so the hash never stays on device */
-  try {
-    ['decor_lock_v1', 'decor_lock_v2', 'decor_lock_v3'].forEach(function (k) {
-      localStorage.removeItem(k);
-    });
-  } catch (e) {}
 
-  var container = document.getElementById('decor-lock-container');
-  if (container) init(container);
+  /* ---------------- boot ---------------- */
+
+  function init() {
+    // Purge any legacy local password records — hash lives only in D1.
+    try {
+      ['decor_lock_v1', 'decor_lock_v2', 'decor_lock_v3', 'decor_lock_v4'].forEach(function (k) { localStorage.removeItem(k); });
+    } catch (e) {}
+
+    record = null;
+    unlocked = false;
+    renderGate();
+
+    window.DecorLock = {
+      change: change,
+      lock: lock,
+      isUnlocked: function () { return unlocked; },
+      hasPassword: function () { return !!readCurrentRecord(); },
+      verify: checkPassword,
+      fetchFromServer: fetchLock,   // exposed for tests
+      version: RECORD_VERSION
+    };
+  }
+
+  /* Delegated wiring so drawer/menu entries work even when lock.js runs
+     before the rest of the page has been parsed. */
+  document.addEventListener('click', function (e) {
+    var n = e.target && e.target.closest ? e.target.closest('[data-decor-lock]') : null;
+    if (!n) return;
+    e.preventDefault();
+    change();
+  });
+
+  if (document.body) init();
+  else document.addEventListener('DOMContentLoaded', init);
 })();
